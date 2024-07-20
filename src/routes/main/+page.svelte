@@ -3,7 +3,6 @@
     import Piano from "$lib/components/Piano.svelte";
     import PianoRoll from "$lib/components/PianoRoll.svelte";
     import createSampler from "./sampler.js";
-    import { frequencyData } from "./store.js";
     import Graph from "./Graph.svelte";
     import { showKeys } from "$lib/stores.js";
     import {
@@ -18,41 +17,6 @@
     import { onMount } from "svelte";
     import { delay } from "$lib/util";
 
-    const noteFrequencies = {
-        C3: 130.81,
-        "C#3": 138.59,
-        D3: 146.83,
-        "D#3": 155.56,
-        E3: 164.81,
-        F3: 174.61,
-        "F#3": 185.0,
-        G3: 196.0,
-        "G#3": 207.65,
-        A3: 220.0,
-        "A#3": 233.08,
-        B3: 246.94,
-        C4: 261.63,
-        "C#4": 277.18,
-        D4: 293.66,
-        "D#4": 311.13,
-        E4: 329.63,
-        F4: 349.23,
-        "F#4": 369.99,
-        G4: 392.0,
-        "G#4": 415.3,
-        A4: 440.0,
-        "A#4": 466.16,
-        B4: 493.88,
-        C5: 523.25,
-    };
-
-    function update(note) {
-        const frequency = noteFrequencies[note];
-        if (frequency) {
-            frequencyData.update((data) => [...data, frequency]);
-        }
-    }
-
     // The current measure and chord (noteChoices) both correspond to the same index
     let melody: Measure[] = [];
     let noteChoices: Measure[] = [{ notes: [] }];
@@ -61,7 +25,6 @@
 
     function playPianoNote(key: string) {
         synth.triggerAttack(key);
-        update(key);
     }
 
     let keyInitialized = false;
@@ -98,16 +61,45 @@
     function setMeasureNote(note: string, octave: string) {
         measure[inMeasureIndex].note = note;
         measure[inMeasureIndex].octave = octave;
+        melody[measureIndex] = { notes: [] };
+        melody[measureIndex].notes = measure;
 
-        if (inMeasureIndex + 1 < measure.length) inMeasureIndex++;
+        // Either increment the current line or go to the next measure or finish
+        if (inMeasureIndex + 1 < measure.length) {
+            inMeasureIndex++;
+        } else {
+            if (measureIndex < noteChoices.length - 1) {
+                nextMeasure();
+            } else {
+                finish();
+            }
+        }
     }
 
     function nextMeasure() {
-        melody[measureIndex] = { notes: [] };
-        melody[measureIndex].notes = measure;
-        measure = generateEmptyMeasure(selectedRhythm);
         measureIndex++;
+
+        setTimeout(() => {
+            synth.triggerRelease();
+        }, 100);
+
+        if (melody[measureIndex]) {
+            measure = melody[measureIndex].notes;
+        } else {
+            measure = generateEmptyMeasure(selectedRhythm);
+            melody[measureIndex] = { notes: [] };
+            melody[measureIndex].notes = measure;
+        }
+
         inMeasureIndex = 0;
+    }
+
+    function previousMeasure() {
+        if (measureIndex - 1 < 0) return;
+
+        measureIndex--;
+        inMeasureIndex = 0;
+        measure = melody[measureIndex].notes;
     }
 
     let finished = false;
@@ -274,36 +266,59 @@
             <div
                 class="left flex justify-center items-center flex-col col-span-4"
             >
-                <div class="bg-gray h-fit w-fit">
-                    <!-- PIANO ROLL -->
-                    {#if !finished}
-                        <PianoRoll
-                            notes={measure}
-                            bind:selectedIndex={inMeasureIndex}
-                        ></PianoRoll>
-                    {:else}
-                        <PianoRoll
-                            notes={melodyToNotes}
-                            selectedIndex={rollRow}
-                            canEdit={false}
-                        ></PianoRoll>
-                    {/if}
+                <div class="flex">
+                    <div>
+                        <button on:click={previousMeasure}> Back </button>
+                    </div>
+                    <div>
+                        <!-- PIANO -->
+                        <div class="bg-gray h-fit w-fit">
+                            <!-- ROLL -->
+                            {#if !finished}
+                                <PianoRoll
+                                    notes={measure}
+                                    bind:selectedIndex={inMeasureIndex}
+                                ></PianoRoll>
+                            {:else}
+                                <PianoRoll
+                                    notes={melodyToNotes}
+                                    selectedIndex={rollRow}
+                                    canEdit={false}
+                                ></PianoRoll>
+                            {/if}
 
-                    <!-- PIANO (for key selection) -->
-                    <Piano
-                        {hoverNote}
-                        playNote={(key) => {
-                            playPianoNote(key.name());
+                            <!-- KEYS -->
+                            <Piano
+                                {hoverNote}
+                                playNote={(key) => {
+                                    playPianoNote(key.name());
 
-                            setMeasureNote(key.note, key.octave);
-                        }}
-                        selectableNotes={!finished
-                            ? noteChoices[measureIndex].notes
-                            : allNotes()}
-                    ></Piano>
+                                    if (!finished)
+                                        setMeasureNote(key.note, key.octave);
+                                }}
+                                selectableNotes={!finished
+                                    ? noteChoices[measureIndex].notes
+                                    : allNotes()}
+                            ></Piano>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button
+                            on:click={() => {
+                                if (measureIndex < noteChoices.length - 1) {
+                                    nextMeasure();
+                                } else {
+                                    finish();
+                                }
+                            }}
+                        >
+                            Next Measure
+                        </button>
+                    </div>
                 </div>
-                <!-- CHOICE BUTTONS -->
 
+                <!-- RHYTHM BUTTONS -->
                 <div class="mt-8 flex flex-row items-center justify-center gap">
                     {#each rhythmCatalog as { name, rhythm }}
                         <button
@@ -313,21 +328,10 @@
                             {name}
                         </button>
                     {/each}
-                    {#if measureIndex < noteChoices.length - 1}
-                        <div>
-                            <button on:click={nextMeasure}>
-                                Next Measure
-                            </button>
-                        </div>
-                    {:else}
-                        <div>
-                            <button on:click={finish}> Finish </button>
-                        </div>
-                    {/if}
                 </div>
             </div>
             <div class="right">
-                <Graph bind:this={graphRef} playbackArr={melodyToNotes} />
+                <Graph bind:this={graphRef} notes={melodyToNotes} />
             </div>
         </div>
     </div>
@@ -350,51 +354,8 @@
 </html> -->
 
 <style>
-    body,
-    html {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background-repeat: no-repeat;
-        background-size: cover;
-        font-family: Arial, sans-serif;
-    }
     .page {
         background-color: #1e1e1e;
-    }
-
-    .home-screen {
-        color: white;
-        height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-top: 0;
-        text-align: center;
-    }
-
-    a {
-        text-decoration: none;
-    }
-
-    .title {
-        cursor: pointer;
-        margin-top: 20vw;
-        font-size: 6vw;
-        font-weight: bold;
-        color: #e6e6fa;
-    }
-
-    .title:hover {
-        transform: scale(1.1);
-        color: #e0ffff;
-    }
-
-    .buttons {
-        margin-top: 1vw;
-        display: flex;
-        flex-direction: row;
-        gap: 4vw;
     }
 
     button {
@@ -414,10 +375,6 @@
     button:hover {
         background-color: #f8f8ff;
         color: black;
-    }
-
-    .fade-out {
-        animation: fadeOutAnimation 1s ease forwards;
     }
 
     .showKeys {
