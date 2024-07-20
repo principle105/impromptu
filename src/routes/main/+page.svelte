@@ -48,10 +48,8 @@
 
     function update(note) {
         const frequency = noteFrequencies[note];
-        console.log("1");
         if (frequency) {
             frequencyData.update((data) => [...data, frequency]);
-            console.log("2");
         }
     }
 
