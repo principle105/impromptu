@@ -109,6 +109,8 @@
     $: melodyToNotes = measureArrayToNoteArray(melody);
 
     function finish() {
+        melody[measureIndex] = { notes: [] };
+        melody[measureIndex].notes = measure;
         finished = true;
     }
 
@@ -178,7 +180,7 @@
             console.log(startingTimeNow + " original now");
 
             if ((now - startingTimeNow) % 1 == 0) {
-                backingTrack = majorTriads[melodyToNotes[i].name()];
+                backingTrack = majorTriads[melodyToNotes[i].note];
                 // console.log(backingTrack);
                 //hold for entire sequence
                 isBacking = true;
@@ -294,7 +296,10 @@
                             bind:selectedIndex={inMeasureIndex}
                         ></PianoRoll>
                     {:else}
-                        <PianoRoll notes={melodyToNotes} selectedIndex={rollRow} canEdit={false}
+                        <PianoRoll
+                            notes={melodyToNotes}
+                            selectedIndex={rollRow}
+                            canEdit={false}
                         ></PianoRoll>
                     {/if}
 
@@ -306,7 +311,9 @@
 
                             setMeasureNote(key.note, key.octave);
                         }}
-                        selectableNotes={!finished ? noteChoices[measureIndex].notes : allNotes()}
+                        selectableNotes={!finished
+                            ? noteChoices[measureIndex].notes
+                            : allNotes()}
                     ></Piano>
                 </div>
                 <!-- CHOICE BUTTONS -->
