@@ -34,6 +34,7 @@
     },
     "type": "module",
     "dependencies": {
+        "chart.js": "^4.4.3",
         "tone": "^15.0.4"
     }
 }

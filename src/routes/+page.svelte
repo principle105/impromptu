@@ -3,6 +3,7 @@
     import Piano from "../lib/components/Piano.svelte";
     import PianoRoll from "../lib/components/PianoRoll.svelte";
     import createSampler from "./sampler.js";
+    import Graph from "../lib/components/Graph.svelte";
     import { showKeys } from "$lib/stores.js";
     import {
         type recording,
@@ -34,6 +35,9 @@
 
     // Checks if custom is toggled or not
     let customToggle = false;
+
+    //for the graph
+    let graphRef;
 
     $: choiceIndex !== 0 ? (pianoDisabled = true) : (pianoDisabled = false);
 
@@ -189,19 +193,55 @@
         }
     }
 
+    const noteFrequencies = {
+        C3: 130.81,
+        "C#3": 138.59,
+        D3: 146.83,
+        "D#3": 155.56,
+        E3: 164.81,
+        F3: 174.61,
+        "F#3": 185.0,
+        G3: 196.0,
+        "G#3": 207.65,
+        A3: 220.0,
+        "A#3": 233.08,
+        B3: 246.94,
+        C4: 261.63,
+        "C#4": 277.18,
+        D4: 293.66,
+        "D#4": 311.13,
+        E4: 329.63,
+        F4: 349.23,
+        "F#4": 369.99,
+        G4: 392.0,
+        "G#4": 415.3,
+        A4: 440.0,
+        "A#4": 466.16,
+        B4: 493.88,
+        C5: 523.25,
+    };
+    function getNoteFrequency(note) {
+        return noteFrequencies[note] || "Note not found";
+    }
+
     export function saveNote(key: string, length: number) {
         choiceIndex++;
         console.log("save");
-        let save: recording = {
+        let save = {
             name: key,
             duration: length,
         };
-        // qol to make playbacks easier
-        // if (cntIndex[0] != 0) {
-        //     save.duration += playbackArr[cntIndex[0] - 1].duration;
-        // }
-        if (key != "Refresh" && key != "Custom") {
+
+        if (key !== "Refresh" && key !== "Custom") {
             playbackArr.push({ name: key, length });
+            const newData = playbackArr.map((item) =>
+                getNoteFrequency(item.name),
+            );
+            graphRef.updateChart(newData);
+            // qol to make playbacks easier
+            // if (cntIndex[0] != 0) {
+            //     save.duration += playbackArr[cntIndex[0] - 1].duration;
+            // }
         } else {
             // if (key == "Custom") {
             //     // custom
@@ -211,10 +251,10 @@
             //     choiceIndex--;
             //     console.log("custom");
             // } else {
-                // refresh
-                cntIndex[0]--;
-                choiceIndex--;
-                console.log("refresh");
+            // refresh
+            cntIndex[0]--;
+            choiceIndex--;
+            console.log("refresh");
             // }
         }
         // playbackNotes.push({ name: key, length });
@@ -310,74 +350,82 @@
             </button>
         </div>
     </div>
-
-    <!-- PIANO ROLL -->
-    {#if choiceIndex < noteChoices.length}
-        <PianoRoll notes={currentChoices[rollIndex]} selectedIndex={rollRow}
-        ></PianoRoll>
-    {:else if playbackArr}
-        <PianoRoll notes={playbackArr} selectedIndex={rollRow}></PianoRoll>
-    {/if}
-
-    <!-- PIANO (for key selection) -->
-    <Piano {hoverNote} disabled={pianoDisabled} playNote={playPianoNote}
-    ></Piano>
-
-    <!-- CHOICE BUTTONS -->
-    {#if choiceIndex < noteChoices.length}
-        <div class="mt-8 flex flex-row items-center justify-center">
-            <!-- Rest -->
-            <ChoiceButton
-                notes={[{ name: "Rest", length: 1 }]}
-                mouseenter={() => {
-                    hoverNote = "";
-                }}
-                mouseexit={() => {
-                    hoverNote = "";
-                }}
-                click={() => {
-                    saveNote("Rest", 1);
-                    hoverNote = "";
-                }}
-            >
-                Add a rest
-            </ChoiceButton>
-
-            <!-- Choices -->
-            {#each currentChoices as notes, i}
-                {#if notes}
-                    <ChoiceButton
-                        {notes}
-                        click={() => {
-                            saveNotes(notes);
-                            rollIndex = 0;
-                        }}
-                        mouseenter={() => {
-                            playNotes(notes);
-                            rollIndex = i;
-                        }}
-                        mouseexit={() => {}}
-                    ></ChoiceButton>
+    <div class="main">
+        <div class="left">
+            <div class="container">
+                <!-- PIANO ROLL -->
+                {#if choiceIndex < noteChoices.length}
+                    <PianoRoll
+                        notes={currentChoices[rollIndex]}
+                        selectedIndex={rollRow}
+                    ></PianoRoll>
+                {:else if playbackArr}
+                    <PianoRoll notes={playbackArr} selectedIndex={rollRow}
+                    ></PianoRoll>
                 {/if}
-            {/each}
-            <!-- Refresh Choices -->
-            <ChoiceButton
-                notes={[{ name: "Refresh", length: -1 }]}
-                mouseenter={() => {
-                    hoverNote = "";
-                }}
-                mouseexit={() => {
-                    hoverNote = "";
-                }}
-                click={() => {
-                    saveNote("Refresh", -1);
-                    hoverNote = "";
-                }}
-            >
-                Refresh Choices
-            </ChoiceButton>
-            <!-- Custom Note -->
-            <!-- <ChoiceButton
+
+                <!-- PIANO (for key selection) -->
+                <Piano
+                    {hoverNote}
+                    disabled={pianoDisabled}
+                    playNote={playPianoNote}
+                ></Piano>
+            </div>
+            <!-- CHOICE BUTTONS -->
+            {#if choiceIndex < noteChoices.length}
+                <div class="mt-8 flex flex-row items-center justify-center">
+                    <!-- Rest -->
+                    <ChoiceButton
+                        notes={[{ name: "Rest", length: 1 }]}
+                        mouseenter={() => {
+                            hoverNote = "";
+                        }}
+                        mouseexit={() => {
+                            hoverNote = "";
+                        }}
+                        click={() => {
+                            saveNote("Rest", 1);
+                            hoverNote = "";
+                        }}
+                    >
+                        Add a rest
+                    </ChoiceButton>
+
+                    <!-- Choices -->
+                    {#each currentChoices as notes, i}
+                        {#if notes}
+                            <ChoiceButton
+                                {notes}
+                                click={() => {
+                                    saveNotes(notes);
+                                    rollIndex = 0;
+                                }}
+                                mouseenter={() => {
+                                    playNotes(notes);
+                                    rollIndex = i;
+                                }}
+                                mouseexit={() => {}}
+                            ></ChoiceButton>
+                        {/if}
+                    {/each}
+                    <!-- Refresh Choices -->
+                    <ChoiceButton
+                        notes={[{ name: "Refresh", length: -1 }]}
+                        mouseenter={() => {
+                            hoverNote = "";
+                        }}
+                        mouseexit={() => {
+                            hoverNote = "";
+                        }}
+                        click={() => {
+                            saveNote("Refresh", -1);
+                            hoverNote = "";
+                        }}
+                    >
+                        Refresh Choices
+                    </ChoiceButton>
+                    <!-- Custom Note -->
+                    <!-- <ChoiceButton
                 notes={[{ name: "Custom", length: -1 }]}
                 mouseenter={() => {
                     hoverNote = "";
@@ -392,11 +440,21 @@
             >
                 Add a custom note
             </ChoiceButton> -->
+                </div>
+            {/if}
         </div>
-    {/if}
+        <div class="right">
+            <Graph bind:this={graphRef} {playbackArr} />
+        </div>
+    </div>
 </div>
 
 <style>
+    .main {
+        display: flex;
+        flex-direction: row;
+        gap: 50px;
+    }
     .buttonthings {
         background-color: #008cba;
     }
@@ -499,5 +557,21 @@
         background-color: rgb(97, 97, 97);
         border: 2px rgb(126, 124, 124) solid;
         color: rgb(213, 213, 213);
+    }
+    .container {
+        display: flex;
+        flex-direction: column; /* Stack items vertically */
+        align-items: stretch; /* Ensure items take up full width */
+    }
+
+    .container > :global(*) {
+        flex: none; /* Ensure the items do not grow or shrink */
+        width: 100%; /* Ensure both elements take up full width */
+    }
+
+    .container > :global(PianoRoll),
+    .container > :global(Piano) {
+        margin: 0;
+        padding: 0;
     }
 </style>
