@@ -101,7 +101,7 @@
                 }
                 noteChoices[i].push(note + octave);
             });
-            console.log(i + ": " + noteChoices[i]);
+            // console.log(i + ": " + noteChoices[i]);
         });
     }
 
@@ -118,12 +118,13 @@
     });
 
     // This plays finished melody
-    // TODO: Harmonize the melody with chords
+    // Harmonized the melody with chords
     async function playbackRecord() {
         let sampler: Tone.Synth<Tone.SynthOptions>;
         sampler = createSampler();
         let backgroundSynth: Tone.Synth<Tone.SynthOptions>;
         backgroundSynth = createSampler();
+        backgroundSynth.volume.value -= 20;
         let now = Tone.now();
         for (let i = 0; i < playbackArr.length; i++) {
             let delayTime = 1000 * playbackArr[i].length;
@@ -154,7 +155,6 @@
                 playbackArr[i].length,
                 now,
             );
-            backgroundSynth.volume.value = -20;
             if (isBacking == true) {
                 backgroundSynth.triggerAttackRelease(combineTracks, 1, now);
             }
@@ -238,7 +238,9 @@
             loadSampler();
             previewSynthCreated[0] = true;
         }
-        synthNotes.triggerAttackRelease([key], length);
+        // testing, sometimes it gives an error and i dont know why (basically every time on code based refresh)
+        console.log(key + " " + length);
+        synthNotes.triggerAttackRelease(key, length);
     }
 
     let currentlyPlaying = null;

@@ -210,16 +210,10 @@ const DOMINANT_CADENCE = ["V", "I"];
 // PROGRESSION SNIPPETS
 const IV_V_vi_IV = ["IV", "V", "VI", "IV"];
 const possibleProgressions = [
-  ["I", "IV", "I", "I", "IV", "IV", "I", "I", "V", "IV", "I", "I", "V"],
-  ["I", "IV", "I", "I", "IV", "IV", "I", "I", "V", "IV", "V", "I", "I"],
-  ["I", "IV", "IV", "I", "IV", "IV", "I", "I", "V", "V", "I", "I", "I"],
-  ["I", "I", "I", "I", "IV", "IV", "I", "I", "V", "IV", "I", "V", "I"],
-  ["I", "IV", "I", "V", "IV", "IV", "I", "I", "V", "IV", "V", "I", "I"],
-  ["I", "I", "IV", "IV", "I", "I", "I", "IV", "V", "IV", "I", "I", "V"],
-  ["I", "IV", "I", "I", "IV", "IV", "I", "V", "I", "IV", "I", "I", "V"],
-  ["I", "IV", "I", "I", "IV", "I", "I", "IV", "V", "IV", "I", "I", "V"],
-  ["I", "IV", "I", "IV", "I", "IV", "I", "I", "V", "IV", "I", "I", "V"],
-  ["I", "I", "IV", "I", "IV", "IV", "I", "I", "V", "IV", "I", "I", "V"]
+  ["I", "I", "I", "I", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V"],
+  ["I", "I", "I", "I", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V", "IV", "IV", "IV", "IV", "V", "V", "V", "V", "I", "I", "I", "I", "I", "I", "I", "I"],
+  ["I", "I", "I", "I", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V", "V", "V", "V", "V", "I", "I", "I", "I", "I", "I", "I", "I"],
+  ["I", "I", "I", "I", "I", "I", "I", "I", "I", "I", "I", "I", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V", "IV", "IV", "IV", "IV", "I", "I", "I", "I", "I", "I", "I", "I", "V", "V", "V", "V", "I", "I", "I", "I"],
 ];
 
 
