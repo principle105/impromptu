@@ -143,18 +143,19 @@
         // );
 
         let realKey =
-            key.name.length === 3 ? key.name.substring(0, 1) : key.name[0];
+            key.name.length === 3 ? key.name.substring(0, 2) : key.name[0];
+        console.log("The key is: " + realKey);
 
         let intervals = generateIntervals(realKey);
         console.log(intervals);
 
         exampleProgression.forEach((element: string, i) => {
             $noteChoices[i] = [];
-            
+
             intervals[element] = shuffle(intervals[element]);
-            intervals[element].forEach((note : string) => {
+            intervals[element].forEach((note: string) => {
                 let octave = Math.floor(Math.random()) + 3;
-                if (i === $noteChoices.length - 1) {
+                if (i === exampleProgression.length - 1) {
                     $noteChoices[i].push(key.name);
                     return;
                 }
@@ -205,7 +206,7 @@
         {disabled}
         aria-roledescription="C note"
         id="key-1"
-        class="key white"
+        class={`key white ${hoverNote === "C3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-1")}
         on:focus
         on:mouseleave={() => hideNote("key-1")}
@@ -224,7 +225,7 @@
     <button
         {disabled}
         id="key-2"
-        class="key black"
+        class={`key black ${hoverNote === "C#3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-2")}
         on:focus
         on:mouseleave={() => hideNote("key-2")}
@@ -243,7 +244,7 @@
     <button
         {disabled}
         id="key-3"
-        class="key white"
+        class={`key white ${hoverNote === "D3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-3")}
         on:focus
         on:mouseleave={() => hideNote("key-3")}
@@ -262,7 +263,7 @@
     <button
         {disabled}
         id="key-4"
-        class="key black"
+        class={`key black ${hoverNote === "D#3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-4")}
         on:focus
         on:mouseleave={() => hideNote("key-4")}
@@ -281,7 +282,7 @@
     <button
         {disabled}
         id="key-5"
-        class="key white"
+        class={`key white ${hoverNote === "E3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-5")}
         on:focus
         on:mouseleave={() => hideNote("key-5")}
@@ -300,7 +301,7 @@
     <button
         {disabled}
         id="key-6"
-        class="key white"
+        class={`key white ${hoverNote === "F3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-6")}
         on:focus
         on:mouseleave={() => hideNote("key-6")}
@@ -319,7 +320,7 @@
     <button
         {disabled}
         id="key-7"
-        class="key black"
+        class={`key black ${hoverNote === "F#3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-7")}
         on:focus
         on:mouseleave={() => hideNote("key-7")}
@@ -338,7 +339,7 @@
     <button
         {disabled}
         id="key-8"
-        class="key white"
+        class={`key white ${hoverNote === "G3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-8")}
         on:focus
         on:mouseleave={() => hideNote("key-8")}
@@ -357,7 +358,7 @@
     <button
         {disabled}
         id="key-9"
-        class="key black"
+        class={`key black ${hoverNote === "G#3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-9")}
         on:focus
         on:mouseleave={() => hideNote("key-9")}
@@ -376,7 +377,7 @@
     <button
         {disabled}
         id="key-10"
-        class="key white"
+        class={`key white ${hoverNote === "A3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-10")}
         on:focus
         on:mouseleave={() => hideNote("key-10")}
@@ -395,7 +396,7 @@
     <button
         {disabled}
         id="key-11"
-        class="key black"
+        class={`key black ${hoverNote === "A#3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-11")}
         on:focus
         on:mouseleave={() => hideNote("key-11")}
@@ -414,7 +415,7 @@
     <button
         {disabled}
         id="key-12"
-        class="key white"
+        class={`key white ${hoverNote === "B3" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-12")}
         on:focus
         on:mouseleave={() => hideNote("key-12")}
@@ -433,7 +434,7 @@
     <button
         {disabled}
         id="key-13"
-        class="key white"
+        class={`key white ${hoverNote === "C4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-13")}
         on:focus
         on:mouseleave={() => hideNote("key-13")}
@@ -452,7 +453,7 @@
     <button
         {disabled}
         id="key-14"
-        class="key black"
+        class={`key black ${hoverNote === "C#4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-14")}
         on:focus
         on:mouseleave={() => hideNote("key-14")}
@@ -471,7 +472,7 @@
     <button
         {disabled}
         id="key-15"
-        class="key white"
+        class={`key white ${hoverNote === "D4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-15")}
         on:focus
         on:mouseleave={() => hideNote("key-15")}
@@ -490,7 +491,7 @@
     <button
         {disabled}
         id="key-16"
-        class="key black"
+        class={`key black ${hoverNote === "D#4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-16")}
         on:focus
         on:mouseleave={() => hideNote("key-16")}
@@ -509,7 +510,7 @@
     <button
         {disabled}
         id="key-17"
-        class="key white"
+        class={`key white ${hoverNote === "E4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-17")}
         on:focus
         on:mouseleave={() => hideNote("key-17")}
@@ -528,7 +529,7 @@
     <button
         {disabled}
         id="key-18"
-        class="key white"
+        class={`key white ${hoverNote === "F4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-18")}
         on:focus
         on:mouseleave={() => hideNote("key-18")}
@@ -547,7 +548,7 @@
     <button
         {disabled}
         id="key-19"
-        class="key black"
+        class={`key black ${hoverNote === "F#4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-19")}
         on:focus
         on:mouseleave={() => hideNote("key-19")}
@@ -566,7 +567,7 @@
     <button
         {disabled}
         id="key-20"
-        class="key white"
+        class={`key white ${hoverNote === "G4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-20")}
         on:focus
         on:mouseleave={() => hideNote("key-20")}
@@ -585,7 +586,7 @@
     <button
         {disabled}
         id="key-21"
-        class="key black"
+        class={`key black ${hoverNote === "G#4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-21")}
         on:focus
         on:mouseleave={() => hideNote("key-21")}
@@ -604,7 +605,7 @@
     <button
         {disabled}
         id="key-22"
-        class="key white"
+        class={`key white ${hoverNote === "A4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-22")}
         on:focus
         on:mouseleave={() => hideNote("key-22")}
@@ -623,7 +624,7 @@
     <button
         {disabled}
         id="key-23"
-        class="key black"
+        class={`key black ${hoverNote === "A#4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-23")}
         on:focus
         on:mouseleave={() => hideNote("key-23")}
@@ -642,7 +643,7 @@
     <button
         {disabled}
         id="key-24"
-        class="key white"
+        class={`key white ${hoverNote === "B4" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-24")}
         on:focus
         on:mouseleave={() => hideNote("key-24")}
@@ -661,7 +662,7 @@
     <button
         {disabled}
         id="key-25"
-        class="key white"
+        class={`key white ${hoverNote === "C5" ? "playing" : ""}`}
         on:mouseover={() => showNote("key-25")}
         on:focus
         on:mouseleave={() => hideNote("key-25")}
@@ -699,7 +700,15 @@
         user-select: none;
     }
 
-    .key.white {
+    .white.playing {
+        border: solid 3px rgb(66, 224, 255);
+    }
+
+    .black.playing {
+        border: solid 3px rgb(66, 224, 255);
+    }
+
+    .white {
         width: 7.15%;
         height: 100%;
         background-color: white;
@@ -708,11 +717,11 @@
         position: absolute;
     }
 
-    .key.white:active {
+    .white:active {
         background-color: rgb(232, 232, 232);
     }
 
-    .key.black {
+    .black {
         width: 4%;
         height: 60%;
         background-color: black;
@@ -721,7 +730,7 @@
         z-index: 1;
     }
 
-    .key.black:active {
+    .black:active {
         background-color: rgb(18, 18, 18);
     }
 

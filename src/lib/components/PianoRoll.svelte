@@ -120,7 +120,7 @@
 {#if notes && index < notes.length}
     <div class="viewport" bind:this={viewport}>
         {#each notes[index] as note, i}
-            {#if note && lengths[i]}
+            {#if note}
                 <button
                     id={`line-${i}`}
                     class="line"
@@ -164,6 +164,7 @@
         margin-left: 42.9px;
         width: 642.9px;
         height: fit-content;
+        min-height: 100px;
         max-height: 300px;
         overflow: auto;
         display: flex;

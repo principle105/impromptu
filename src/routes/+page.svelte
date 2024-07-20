@@ -24,6 +24,7 @@
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
 
     let hoverNote: string;
+    let rollIndex = 0;
     let pianoDisabled: boolean = false;
 
     let choiceIndex = 0;
@@ -45,7 +46,9 @@
                     playbackArr[i].duration,
                     now,
                 );
+                hoverNote = playbackArr[i].name;
             } else {
+                hoverNote = playbackArr[i].name;
                 console.log(i);
                 sampler.triggerAttackRelease(
                     playbackArr[i].name,
@@ -56,12 +59,15 @@
         }
     }
 
+    let playbackNotes: string[][] = [[""]];
+
     export function saveNote(key: string, length: number) {
         console.log("save");
         let save: recording = {
             name: key,
             duration: length,
         };
+        playbackNotes[0].push(save.name);
         // qol to make playbacks easier
         if (cntIndex[0] != 0) {
             save.duration += playbackArr[cntIndex[0] - 1].duration;
@@ -165,53 +171,48 @@
         </div>
     </div>
 
-    <button
-        class="buttonthings"
-        on:click={() => saveNote($noteChoices[0][0], $noteLength[0])}
-        on:focus
-        on:mouseover={() => playNote($noteChoices[0][0], $noteLength[0])}
-    >
-        Choice 1
-    </button>
-    <button
-        class="buttonthings"
-        on:click={() => saveNote($noteChoices[0][1], $noteLength[1])}
-        on:focus
-        on:mouseover={() => playNote($noteChoices[0][1], $noteLength[1])}
-    >
-        Choice 2
-    </button>
-    <button
-        class="buttonthings"
-        on:click={() => saveNote($noteChoices[0][2], $noteLength[2])}
-        on:focus
-        on:mouseover={() => playNote($noteChoices[0][2], $noteLength[2])}
-    >
-        Choice 3
-    </button>
-    <button
-        class="buttonthings"
-        on:click={() => saveNote("Rest", fullNoteLength / 4)}
-    >
-        Add a rest
-    </button>
-    <button class="buttonthings" on:click={() => playbackRecord()}>
-        PLAYBACK
-    </button>
-    <PianoRoll
-        notes={$noteChoices}
-        index={choiceIndex}
-        lengths={$noteLength}
-        {hoverNote}
-    ></PianoRoll>
+    {#if choiceIndex < $noteChoices.length}
+        <PianoRoll
+            notes={$noteChoices}
+            index={choiceIndex}
+            lengths={$noteLength}
+            {hoverNote}
+        ></PianoRoll>
+    {:else}
+        <PianoRoll
+            notes={playbackNotes}
+            index={0}
+            lengths={$noteLength}
+            {hoverNote}
+        ></PianoRoll>
+    {/if}
     <Piano {hoverNote} disabled={pianoDisabled}></Piano>
 
     {#if choiceIndex < $noteChoices.length}
         <div class="mt-8 flex flex-row items-center justify-center">
+            <ChoiceButton
+                mouseenter={() => {
+                    hoverNote = "";
+                }}
+                mouseexit={() => {
+                    hoverNote = "";
+                }}
+                note={"Rest"}
+                length={fullNoteLength / 4}
+                click={() => {
+                    saveNote("Rest", fullNoteLength / 4);
+                    hoverNote = "";
+                }}
+            >
+                Add a rest
+            </ChoiceButton>
             {#each $noteChoices[choiceIndex] as note, i}
                 {#if note && $noteLength[i]}
                     <ChoiceButton
-                        click={() => saveNote(note, $noteLength[i])}
+                        click={() => {
+                            saveNote(note, $noteLength[i]);
+                            hoverNote = ""; 
+                        }}
                         mouseenter={() => {
                             hoverNote = note;
                             playNote(note, $noteLength[i]);

@@ -139,6 +139,7 @@ function generateMajorScale(key: string) {
         currentIndex = (currentIndex + interval) % noteNames.length;
     }
 
+    console.log(scale)
     return scale;
 }
 
