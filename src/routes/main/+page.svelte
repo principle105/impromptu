@@ -17,26 +17,19 @@
     import { onMount } from "svelte";
     import { delay } from "$lib/util";
 
-    /* NEW IMPLEMENTATION */
-    /* ------------------ */
-
     // The current measure and chord (noteChoices) both correspond to the same index
     let melody: Measure[] = [];
     let noteChoices: Measure[] = [{ notes: [] }];
     let measureIndex = 0;
     let inMeasureIndex = 0;
 
-    // This imports into the piano component
     function playPianoNote(key: string) {
         synth.triggerAttack(key);
     }
 
-    // KEY AND CHORD PROGRESSION INITIALIZATION
-    // Every time the key changes (only at the beg.) the note choices also change (based on the key and chord prog.)
     let keyInitialized = false;
 
     function setKey(key: Note) {
-        // Chord progression randomized in createPossibleNotes at the bottom
         let chordProgression = exampleProgression;
         setNoteChoices(key.note, chordProgression);
         keyInitialized = true;
@@ -44,34 +37,19 @@
 
     function setNoteChoices(key: string, chordProgression: string[]) {
         let intervals = generateIntervals(key);
-        // Generate the notes from the chord progression based on the key
         chordProgression.forEach((element: string, i) => {
             noteChoices[i] = { notes: [] };
-
             intervals[element].forEach((note: string) => {
                 noteChoices[i].notes.push(new Note(note));
             });
         });
     }
 
-    // NOTE SELECTION AND MELODY CREATION
     let rhythmCatalog = [
-        {
-            name: "Whole Note",
-            rhythm: [1],
-        },
-        {
-            name: "Half Notes",
-            rhythm: [1 / 2, 1 / 2],
-        },
-        {
-            name: "Quarter Notes",
-            rhythm: [1 / 4, 1 / 4, 1 / 4, 1 / 4],
-        },
-        {
-            name: "Eigth Notes",
-            rhythm: [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
-        },
+        { name: "Whole Note", rhythm: [1] },
+        { name: "Half Notes", rhythm: [1 / 2, 1 / 2] },
+        { name: "Quarter Notes", rhythm: [1 / 4, 1 / 4, 1 / 4, 1 / 4] },
+        { name: "Eigth Notes", rhythm: [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8] },
     ];
 
     let selectedRhythm: number[] = rhythmCatalog[2].rhythm;
@@ -96,13 +74,11 @@
 
     function measureArrayToNoteArray(melody: Measure[]) {
         const notes: Note[] = [];
-
         for (let i = 0; i < melody.length; i++) {
             for (let j = 0; j < melody[i].notes.length; j++) {
                 notes.push(melody[i].notes[j]);
             }
         }
-
         return notes;
     }
 
@@ -114,19 +90,13 @@
         finished = true;
     }
 
-    /* ------------------ */
-
-    /* FOR PLAYBACK */
     let hoverNote: string;
     let rollRow = 0;
 
-    //for the graph
     let graphRef;
 
-    /* TO HANDLE SOUND AND PLAYBACK */
     let isPlaying = false;
 
-    /* Synth Initialization */
     let synth: Tone.Synth<Tone.SynthOptions>;
 
     onMount(() => {
@@ -137,7 +107,6 @@
         synth.triggerRelease();
     }
 
-    // This makes sure that the sound stops no matter where the mouse up occurs
     onMount(() => {
         window.addEventListener("mouseup", onRelease);
         return () => {
@@ -148,8 +117,10 @@
     let flagStart = false;
     let startingTimeNow = -1;
 
-    // This plays finished melody
-    // Harmonized the melody with chords
+    function stopPlayback() {
+        isPlaying = false;
+    }
+
     async function playbackRecord() {
         isPlaying = true;
         let sampler: Tone.Synth<Tone.SynthOptions>;
@@ -162,6 +133,8 @@
             startingTimeNow = now;
         }
         for (let i = 0; i < melodyToNotes.length; i++) {
+            if (!isPlaying) break;
+
             let delayTime = 1000 * melodyToNotes[i].length;
             hoverNote = melodyToNotes[i].name();
             rollRow = i;
@@ -169,7 +142,6 @@
             if (melodyToNotes[i].note === "") {
                 now += melodyToNotes[i].length;
                 await delay(delayTime);
-
                 continue;
             }
 
@@ -181,8 +153,6 @@
 
             if ((now - startingTimeNow) % 1 == 0) {
                 backingTrack = majorTriads[melodyToNotes[i].note];
-                // console.log(backingTrack);
-                //hold for entire sequence
                 isBacking = true;
                 combineTracks = [
                     backingTrack[0],
@@ -200,10 +170,8 @@
                 console.log("works backing");
                 backgroundSynth.triggerAttackRelease(combineTracks, 1, now);
             }
-            // only first note of the sequence
 
             now += melodyToNotes[i].length;
-
             await delay(delayTime);
         }
         flagStart = false;
@@ -279,7 +247,13 @@
                 <button
                     class={isPlaying ? "stop" : ""}
                     disabled={!finished}
-                    on:click={playbackRecord}
+                    on:click={() => {
+                        if (isPlaying) {
+                            stopPlayback();
+                        } else {
+                            playbackRecord();
+                        }
+                    }}
                     >{isPlaying ? "Stop" : "Play"}
                 </button>
             </div>
