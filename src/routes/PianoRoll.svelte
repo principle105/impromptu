@@ -1,11 +1,9 @@
 <script lang="ts">
     import { onDestroy, onMount } from "svelte";
-    import { writable } from "svelte/store";
-    import { selectedNote } from "./stores";
+    import { selectedNote, selectedLine, selectedPrefab } from "./stores";
 
-    let selectedPrefab: RhythmPrefab | null = null;
-
-    let selectedLine: number = 0;
+    let currPrefab : RhythmPrefab | null;
+    $: currPrefab = $selectedPrefab;
 
     interface Note {
         note: string;
@@ -37,42 +35,49 @@
     }
 
     let Prefab1: Note[] = [
-        { note: "A", length: 1 },
         { note: "", length: 1 },
-        { note: "AS", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
+        { note: "", length: 1 },
         { note: "", length: 1 },
     ];
 
     const unsubscribe = selectedNote.subscribe((newNote: string) => {
-        if (selectedPrefab) {
+        if (currPrefab) {
             console.log("Setting new note...");
-            const prefab: RhythmPrefab = selectedPrefab;
-            if (prefab.notes[selectedLine]) {
-                prefab.notes[selectedLine].note = newNote;
-                selectedPrefab = prefab;
+            const prefab: RhythmPrefab = currPrefab;
+            if (prefab.notes[$selectedLine]) {
+                prefab.notes[$selectedLine].note = newNote;
+                currPrefab = prefab;
             } else {
                 console.error(
-                    `No note found at line ${selectedLine}` +
-                        selectedPrefab.notes,
+                    `No note found at line ${$selectedLine}`
                 );
             }
         }
     });
 
     onMount(() => {
-        selectedPrefab = createRhythmPrefab(Prefab1);
+        selectedPrefab.set(createRhythmPrefab(Prefab1));
     });
 
     onDestroy(unsubscribe);
 </script>
 
 <div class="viewport">
-    {#if selectedPrefab}
-        {#each selectedPrefab.getNotesArray() as note, i}
+    {#if currPrefab}
+        {#each currPrefab.getNotesArray() as note, i}
             <button
                 class="line"
-                style="height: {note.length * 10}%; background-color: {selectedLine === i ? "rgb(62, 62, 62)" : ""}"
-                on:click={() => (selectedLine = i)}
+                style="height: {note.length * 30}px; background-color: {$selectedLine === i ? "rgb(62, 62, 62)" : ""}; border-top: {currPrefab.notes.length - 1 === i ? "" : "solid white"};"
+                on:click={() => (selectedLine.update(() => i))}
             >
                 <div class="note" style="border-left: none;">
                     {#if note.note === "C3"}
@@ -95,14 +100,18 @@
     .viewport {
         background-color: black;
         width: 600px;
-        height: 300px;
+        height: fit-content;
+        max-height: 200px;
+        overflow: auto;
         display: flex;
         flex-direction: column-reverse;
+        border: #595959 solid;
+        padding: 2px;
     }
 
     .line {
-        border-top: solid white;
         display: flex;
+        flex-shrink: 0;
     }
     .line:hover {
         background-color: rgb(62, 62, 62);

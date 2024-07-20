@@ -1,8 +1,8 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
-    import { selectedNote } from "./stores";
-    import { showKeys } from "./stores";
+    import { selectedNote, selectedLine, showKeys, selectedPrefab} from "./stores";
+
 
     interface Note {
         value: HTMLAudioElement;
@@ -72,6 +72,9 @@
     function playNote(key: Note) {
         selectedNote.set("");
         selectedNote.set(key.name);
+        if ($selectedPrefab && $selectedLine + 1 < $selectedPrefab.notes.length) {
+            selectedLine.update((n) => n + 1);
+        }
         key.value.play();
     }
 </script>
