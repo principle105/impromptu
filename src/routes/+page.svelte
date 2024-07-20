@@ -13,24 +13,53 @@
         }
     }
 
-    function delay(ms: number) {
-        return new Promise((resolve) => setTimeout(resolve, ms));
+    function delay(ms: number, cancelFlag: { isCancelled: boolean }) {
+        return new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                if (cancelFlag.isCancelled) {
+                    reject("Playback cancelled");
+                } else {
+                    resolve();
+                }
+            }, ms);
+            cancelFlag.cleanup = () => clearTimeout(timeout);
+        });
     }
 
+    let isPlaying = false;
+    let cancelFlag = { isCancelled: false, cleanup: () => {} };
+
     let playback = async () => {
+        if (isPlaying) {
+            cancelFlag.isCancelled = true;
+            cancelFlag.cleanup();
+            isPlaying = false;
+            return;
+        }
 
+        isPlaying = true;
+        cancelFlag.isCancelled = false;
 
-        for (let i = 0; i < $selectedPrefab.notes.length; i++) {
-            let element = $selectedPrefab.notes[i];
-            selectedLine.update(() => i);
-            if (element.note) {
-                let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
-                const newAudio = new Audio(src);
-                newAudio.play();
-                await delay(element.length * 1000);
-            } else {
-                await delay(element.length * 1000);
+        try {
+            for (let i = $selectedLine; i < $selectedPrefab.notes.length; i++) {
+                let element = $selectedPrefab.notes[i];
+                selectedLine.update(() => i);
+                if (element.note) {
+                    let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
+                    const newAudio = new Audio(src);
+                    newAudio.play();
+                    await delay(element.length * 1000, cancelFlag);
+                } else {
+                    await delay(element.length * 1000, cancelFlag);
+                }
+                if (cancelFlag.isCancelled) {
+                    throw new Error("Playback cancelled");
+                }
             }
+        } catch (e) {
+            console.log(e.message);
+        } finally {
+            isPlaying = false;
         }
     };
 </script>
@@ -42,7 +71,7 @@
             <input type="checkbox" bind:checked={$showKeys} />
         </div>
         <div class="playback">
-            <button disabled={!canPlay} on:click={playback}>Play</button>
+            <button class={isPlaying ? "stop" : ""} disabled={!canPlay} on:click={playback}>{isPlaying ? "Stop" : "Play"}</button>
         </div>
     </div>
     <PianoRoll></PianoRoll>
@@ -126,6 +155,23 @@
 
     .playback button:active {
         background-color: rgb(59, 191, 90);
+    }
+
+    .playback .stop {
+        color: rgb(245, 194, 194);
+        background-color: rgb(219, 50, 50);
+        border: 2px rgb(215, 14, 14) solid;
+        height: 40px;
+        width: 75px;
+        border-radius: 10px;
+    }
+
+    .playback .stop:hover {
+        background-color: rgb(210, 89, 89);
+    }
+
+    .playback .stop:active {
+        background-color: rgb(191, 59, 59);
     }
 
     .playback button:disabled {
