@@ -118,19 +118,23 @@
         sampler = createSampler();
         let now = Tone.now();
         for (let i = 0; i < playbackArr.length; i++) {
+            let delayTime = 1000 * playbackArr[i].length;
+            hoverNote = playbackArr[i].name;
+            rollRow = i;
+
+            if (playbackArr[i].name === "Rest") {
+                await delay(delayTime);
+                continue;
+            }
+
             sampler.triggerAttackRelease(
                 playbackArr[i].name,
                 playbackArr[i].length,
                 now,
             );
-
-            let delayTime = 1000 * playbackArr[i].length;
-            hoverNote = playbackArr[i].name;
-            rollRow = i;
+            now += playbackArr[i].length;
 
             await delay(delayTime);
-
-            now += playbackArr[i].length;
 
             // if (playbackArr[i].name == "") {
             //     break;
