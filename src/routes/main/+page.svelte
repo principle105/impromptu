@@ -60,16 +60,13 @@
     ];
 
     let selectedRhythm: number[] = rhythmCatalog[2].rhythm;
-    $: measure = generateEmptyMeasure(selectedRhythm);
 
     function setMeasureNote(note: string, octave: string) {
-        measure[inMeasureIndex].note = note;
-        measure[inMeasureIndex].octave = octave;
-        melody[measureIndex] = { notes: [] };
-        melody[measureIndex].notes = measure;
+        melody[measureIndex].notes[inMeasureIndex].note = note;
+        melody[measureIndex].notes[inMeasureIndex].octave = octave;
 
         // Either increment the current line or go to the next measure or finish
-        if (inMeasureIndex + 1 < measure.length) {
+        if (inMeasureIndex + 1 < melody[measureIndex].notes.length) {
             inMeasureIndex++;
         } else {
             if (measureIndex < noteChoices.length - 1) {
@@ -92,12 +89,9 @@
             synth.triggerRelease();
         }, 100);
 
-        if (melody[measureIndex]) {
-            measure = melody[measureIndex].notes;
-        } else {
-            measure = generateEmptyMeasure(selectedRhythm);
+        if (!melody[measureIndex]) {
             melody[measureIndex] = { notes: [] };
-            melody[measureIndex].notes = measure;
+            melody[measureIndex].notes = generateEmptyMeasure(selectedRhythm);
         }
 
         inMeasureIndex = 0;
@@ -108,7 +102,11 @@
 
         measureIndex--;
         inMeasureIndex = 0;
-        measure = melody[measureIndex].notes;
+    }
+
+    function onChangeRhythm() {
+        melody[measureIndex].notes = generateEmptyMeasure(selectedRhythm);
+        inMeasureIndex = 0;
     }
 
     let finished = false;
@@ -126,8 +124,8 @@
     $: melodyToNotes = measureArrayToNoteArray(melody);
 
     function finish() {
-        melody[measureIndex] = { notes: [] };
-        melody[measureIndex].notes = measure;
+        // melody[measureIndex] = { notes: [] };
+        // melody[measureIndex].notes = measure;
         finished = true;
     }
 
@@ -342,7 +340,7 @@
                 >
                     {#each rhythmCatalog as { name, rhythm }}
                         <button
-                            on:click={() => (selectedRhythm = rhythm)}
+                            on:click={() => {selectedRhythm = rhythm; onChangeRhythm()}}
                             class="bg-slate-100 m-2"
                         >
                             {name}
