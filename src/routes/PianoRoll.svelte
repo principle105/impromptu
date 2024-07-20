@@ -2,10 +2,9 @@
     import { onDestroy, onMount, tick } from "svelte";
     import { selectedNote, selectedLine, selectedPrefab } from "./stores";
 
-    let currPrefab: RhythmPrefab | null;
-    $: currPrefab = $selectedPrefab;
-
     let viewport;
+    let currPrefab : RhythmPrefab | null;
+    $: currPrefab = $selectedPrefab; 
 
     interface Note {
         note: string;
@@ -51,18 +50,18 @@
         { note: "", length: 1 },
     ];
 
-    const unsubscribe = selectedNote.subscribe(async ({note: newNote}) => {
-        if (currPrefab) {
+    const unsubscribe = selectedNote.subscribe(async ({ note: newNote }) => {
+        if ($selectedPrefab) {
             console.log("Setting new note...");
-            const prefab: RhythmPrefab = currPrefab;
+            const prefab: RhythmPrefab = $selectedPrefab;
             if (prefab.notes[$selectedLine]) {
                 prefab.notes[$selectedLine].note = newNote;
-                currPrefab = prefab;
+                $selectedPrefab = prefab;
 
-                // Ensure DOM updates before scrolling
+                
+                // Scroll to the selected line
                 await tick();
 
-                // Scroll to the selected line
                 const selectedLineElement = document.getElementById(
                     `line-${$selectedLine}`,
                 );
@@ -77,6 +76,17 @@
             }
         }
     });
+
+    function clearNote(index : number) {
+        selectedPrefab.update(prefab => {
+            if (prefab) {
+                let notes = [...prefab.notes];
+                notes[index] = { ...notes[index], note: "" }; // Clear the note at the specified index
+                return { ...prefab, notes: notes };
+            }
+            return prefab;
+        });
+    }
 
     onMount(() => {
         selectedPrefab.set(createRhythmPrefab(Prefab1));
@@ -109,7 +119,10 @@
                 {#each ["CS3", "D3", "DS3", "E3", "F3", "FS3", "G3", "GS3", "A3", "AS3", "B3", "C4", "CS4", "D4", "DS4", "E4", "F4", "FS4", "G4", "GS4", "A4", "AS4", "B4"] as noteType}
                     <div class="note">
                         {#if note.note === noteType}
-                            <div class="selected"></div>
+                            <button
+                                class="selected"
+                                on:dblclick={() => clearNote(i)}
+                            ></button>
                         {/if}
                     </div>
                 {/each}
