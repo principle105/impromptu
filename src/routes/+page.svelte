@@ -91,7 +91,7 @@
             intervals[element].forEach((note: string) => {
                 let octave = Math.floor(Math.random()) + 3;
                 if (i === exampleProgression.length - 1) {
-                    noteChoices[i].push(key);
+                    noteChoices[i].push(key + octave);
                     return;
                 }
                 noteChoices[i].push(note + octave);
