@@ -2,20 +2,9 @@
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
     import { showKeys } from "../stores";
-    import createSampler from "../../routes/main/sampler.js";
-    import * as Tone from "tone";
-    import {
-        createPossibleNotes,
-        Note,
-        allNotes,
-        exampleProgression,
-        generateIntervals,
-    } from "../../routes/main/createPossibleNotes";
-    import { shuffle } from "$lib/util";
+    import { Note, allNotes } from "../../routes/main/createPossibleNotes";
 
-    export let timePiece = 0;
     export let hoverNote: string;
-    export let disabled: boolean = false;
     export let playNote: (key: Note) => void;
     export let selectableNotes: Note[] = allNotes();
 

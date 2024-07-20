@@ -6,9 +6,6 @@
     import Graph from "$lib/components/Graph.svelte";
     import { showKeys } from "$lib/stores.js";
     import {
-        type recording,
-        cntIndex,
-        previewSynthCreated,
         generateIntervals,
         exampleProgression,
         majorTriads,
@@ -17,9 +14,8 @@
         generateEmptyMeasure,
         allNotes,
     } from "./createPossibleNotes";
-    import ChoiceButton from "$lib/components/ChoiceButton.svelte";
     import { onMount } from "svelte";
-    import { shuffle, sum, delay } from "$lib/util";
+    import { delay } from "$lib/util";
 
     /* NEW IMPLEMENTATION */
     /* ------------------ */
@@ -52,7 +48,6 @@
         chordProgression.forEach((element: string, i) => {
             noteChoices[i] = { notes: [] };
 
-            intervals[element] = shuffle(intervals[element]);
             intervals[element].forEach((note: string) => {
                 noteChoices[i].notes.push(new Note(note));
             });
@@ -98,7 +93,7 @@
     }
 
     let finished = false;
-    
+
     function measureArrayToNoteArray(melody: Measure[]) {
         const notes: Note[] = [];
 
@@ -119,52 +114,15 @@
 
     /* ------------------ */
 
-    /* FOR PREVIEWING AND SELECTION */
+    /* FOR PLAYBACK */
     let hoverNote: string;
-    let rollIndex = 0;
     let rollRow = 0;
-    let pianoDisabled: boolean = false;
-
-    // These are the choices that the user can pick from at given time
-    let currentChoices: { name: string; length: number }[][] = [];
-
-    // Checks if custom is toggled or not
-    let customToggle = false;
 
     //for the graph
     let graphRef;
 
-    $: measureIndex !== 0 ? (pianoDisabled = true) : (pianoDisabled = false);
-
-    $: updateCurrentChoices(noteChoices[measureIndex].notes);
-    function updateCurrentChoices(notes: Note[]) {
-        if (!notes) return;
-
-        for (let i = 0; i < 3; i++) {
-            currentChoices[i] = [];
-            const rhythms = [1, 1 / 2, 1 / 4];
-            let rhythmIndex = Math.floor(Math.random() * rhythms.length);
-            while (sum(currentChoices[i]) < 1) {
-                let noteIndex = Math.floor(Math.random() * (notes.length - 1));
-
-                let note = {
-                    name: notes[noteIndex],
-                    length: rhythms[rhythmIndex],
-                };
-
-                currentChoices[i].push(note);
-            }
-        }
-    }
-
     /* TO HANDLE SOUND AND PLAYBACK */
     let isPlaying = false;
-    let playbackArr: { name: string; length: number }[] = [];
-
-    let synthNotes: Tone.Synth<Tone.SynthOptions>;
-    function loadSampler() {
-        synthNotes = createSampler();
-    }
 
     /* Synth Initialization */
     let synth: Tone.Synth<Tone.SynthOptions>;
@@ -185,14 +143,13 @@
         };
     });
 
-    let playbackActive = false;
     let flagStart = false;
     let startingTimeNow = -1;
 
     // This plays finished melody
     // Harmonized the melody with chords
     async function playbackRecord() {
-        playbackActive = true;
+        isPlaying = true;
         let sampler: Tone.Synth<Tone.SynthOptions>;
         sampler = createSampler();
         let backgroundSynth: Tone.Synth<Tone.SynthOptions>;
@@ -217,6 +174,7 @@
             let isBacking = false;
             console.log(now + " now");
             console.log(startingTimeNow + " original now");
+
             if ((now - startingTimeNow) % 1 == 0) {
                 backingTrack = majorTriads[melodyToNotes[i].name()];
                 // console.log(backingTrack);
@@ -228,6 +186,7 @@
                     backingTrack[2],
                 ];
             }
+
             sampler.triggerAttackRelease(
                 melodyToNotes[i].name(),
                 melodyToNotes[i].length,
@@ -242,33 +201,10 @@
             now += melodyToNotes[i].length;
 
             await delay(delayTime);
-
-            // if (playbackArr[i].name == "") {
-            //     break;
-            // }
-            // if (playbackArr[i].name == "Rest") {
-            //     //doesnt have to do anything because of how i set this up lmao
-            // } else if (i == 0) {
-            //     // make sure player cannot choose rest as first note lol
-            //     sampler.triggerAttackRelease(
-            //         playbackArr[i].name,
-            //         playbackArr[i].length,
-            //         now,
-            //     );
-            //     hoverNote = playbackArr[i].name;
-            // } else {
-            //     hoverNote = playbackArr[i].name;
-            //     console.log(i);
-            //     sampler.triggerAttackRelease(
-            //         playbackArr[i].name,
-            //         playbackArr[i].length - playbackArr[i - 1].length,
-            //         now + playbackArr[i - 1].length,
-            //     );
-            // }
         }
         flagStart = false;
         hoverNote = "";
-        playbackActive = false;
+        isPlaying = false;
     }
 
     const noteFrequencies = {
@@ -298,120 +234,6 @@
         B4: 493.88,
         C5: 523.25,
     };
-    function getNoteFrequency(note) {
-        return noteFrequencies[note] || "Note not found";
-    }
-
-    export function saveNote(key: string, length: number) {
-        keyInitialized = true;
-
-        measureIndex++;
-        console.log("save");
-        let save = {
-            name: key,
-            duration: length,
-        };
-
-        if (key !== "Refresh" && key !== "Custom") {
-            playbackArr.push({ name: key, length });
-            const newData = playbackArr.map((item) =>
-                getNoteFrequency(item.name),
-            );
-            graphRef.updateChart(newData);
-            // qol to make playbacks easier
-            // if (cntIndex[0] != 0) {
-            //     save.duration += playbackArr[cntIndex[0] - 1].duration;
-            // }
-        } else {
-            // if (key == "Custom") {
-            //     // custom
-            //     customToggle = !customToggle;
-            //     togglePiano();
-            //     cntIndex[0]--;
-            //     measureIndex--;
-            //     console.log("custom");
-            // } else {
-            // refresh
-            cntIndex[0]--;
-            measureIndex--;
-            console.log("refresh");
-            // }
-        }
-        // playbackNotes.push({ name: key, length });
-        cntIndex[0]++;
-    }
-
-    function saveNotes(notes: { name: string; length: number }[]) {
-        notes.forEach((note) => {
-            saveNote(note.name, note.length);
-        });
-    }
-
-    export function playNote(
-        key: string,
-        length: number,
-        delay: Tone.Unit.Seconds,
-    ) {
-        if (!key || !length) return;
-
-        if (previewSynthCreated[0] == false) {
-            loadSampler();
-            previewSynthCreated[0] = true;
-        }
-        // testing, sometimes it gives an error and i dont know why (basically every time on code based refresh)
-        console.log(key + " " + length);
-        synthNotes.triggerAttackRelease(key, length);
-    }
-
-    let currentActiveNote = null;
-
-    async function playNotes(notes: { name: string; length: number }[]) {
-        // Cancel the currently playing notes if any
-        if (currentActiveNote) {
-            currentActiveNote.cancel();
-        }
-
-        // Create a new cancel token for the current run
-        const cancelToken = { canceled: false };
-        currentActiveNote = {
-            cancel() {
-                cancelToken.canceled = true;
-            },
-        };
-
-        rollRow = 0;
-
-        for (let i = 0; i < notes.length; i++) {
-            if (cancelToken.canceled) {
-                return;
-            }
-
-            let delayTime = 1000 * notes[i].length;
-            hoverNote = notes[i].name;
-            rollRow = i;
-
-            playNote(notes[i].name, notes[i].length, delayTime);
-
-            await delay(delayTime);
-        }
-
-        if (!cancelToken.canceled) {
-            hoverNote = "";
-        }
-    }
-
-    // To check if playback is allowed (if there are notes to be played)
-    let canPlay = true;
-
-    // $: {
-    //     if (playbackArr) {
-    //         canPlay = playbackArr.some(
-    //             (note) => note !== undefined && note.name !== "",
-    //         );
-    //     } else {
-    //         canPlay = false;
-    //     }
-    // }
 </script>
 
 {#if !keyInitialized}
@@ -430,7 +252,6 @@
             >
                 <Piano
                     {hoverNote}
-                    disabled={pianoDisabled}
                     playNote={(key) => {
                         synth.triggerAttack(key.name());
                         setTimeout(() => {
@@ -453,7 +274,7 @@
             <div class="playback">
                 <button
                     class={isPlaying ? "stop" : ""}
-                    disabled={!canPlay}
+                    disabled={!finished}
                     on:click={playbackRecord}
                     >{isPlaying ? "Stop" : "Play"}
                 </button>
@@ -471,20 +292,19 @@
                             bind:selectedIndex={inMeasureIndex}
                         ></PianoRoll>
                     {:else}
-                        <PianoRoll notes={melodyToNotes} selectedIndex={rollRow}
+                        <PianoRoll notes={melodyToNotes} selectedIndex={rollRow} canEdit={false}
                         ></PianoRoll>
                     {/if}
 
                     <!-- PIANO (for key selection) -->
                     <Piano
                         {hoverNote}
-                        disabled={pianoDisabled}
                         playNote={(key) => {
                             playPianoNote(key.name());
 
                             setMeasureNote(key.note, key.octave);
                         }}
-                        selectableNotes={noteChoices[measureIndex].notes}
+                        selectableNotes={!finished ? noteChoices[measureIndex].notes : allNotes()}
                     ></Piano>
                 </div>
                 <!-- CHOICE BUTTONS -->
@@ -506,15 +326,13 @@
                         </div>
                     {:else}
                         <div>
-                            <button on:click={finish}>
-                                Finish
-                            </button>
+                            <button on:click={finish}> Finish </button>
                         </div>
                     {/if}
                 </div>
             </div>
             <div class="right">
-                <Graph bind:this={graphRef} {playbackArr} />
+                <Graph bind:this={graphRef} playbackArr={melodyToNotes} />
             </div>
         </div>
     </div>
