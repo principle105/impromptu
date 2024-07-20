@@ -122,6 +122,8 @@
     });
 
     let playbackActive = false;
+    let flagStart = false;
+    let startingTimeNow = -1;
 
     // This plays finished melody
     // Harmonized the melody with chords
@@ -133,6 +135,9 @@
         backgroundSynth = createSampler();
         backgroundSynth.volume.value -= 20;
         let now = Tone.now();
+        if(flagStart == false){
+          startingTimeNow = now;
+        }
         for (let i = 0; i < playbackArr.length; i++) {
             let delayTime = 1000 * playbackArr[i].length;
             hoverNote = playbackArr[i].name;
@@ -146,7 +151,9 @@
             let backingTrack;
             let combineTracks;
             let isBacking = false;
-            if (length % 1 == 0) {
+            console.log(now + " now");
+            console.log(startingTimeNow + " original now");
+            if ((now - startingTimeNow) % 1 == 0) {
                 backingTrack = majorTriads[playbackArr[i].name];
                 // console.log(backingTrack);
                 //hold for entire sequence
@@ -163,6 +170,7 @@
                 now,
             );
             if (isBacking == true) {
+              console.log("works backing");
                 backgroundSynth.triggerAttackRelease(combineTracks, 1, now);
             }
             // only first note of the sequence
@@ -194,7 +202,7 @@
             //     );
             // }
         }
-
+        flagStart = false;
         hoverNote = "";
         playbackActive = false;
     }
