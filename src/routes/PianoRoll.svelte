@@ -84,12 +84,13 @@
         });
     }
 
+    let unsubLine = () => {};
     onMount(() => {
         // TODO: Handle prefab switching with a dropdown or some selection method
         selectedPrefab.set(createRhythmPrefab(Prefab1));
 
         // This scrolls the viewport to the selected line whenever it changes
-        let unsubLine = selectedLine.subscribe(async () => {
+        unsubLine = selectedLine.subscribe(async () => {
             await tick();
 
             const selectedLineElement = document.getElementById(
@@ -102,12 +103,12 @@
                 });
             }
         });
+    });
 
-        // Clean up
-        onDestroy(() => {
-            unsubscribe();
-            unsubLine();
-        });
+    // Clean up
+    onDestroy(() => {
+        unsubscribe();
+        unsubLine();
     });
 </script>
 
@@ -129,7 +130,10 @@
             >
                 <div class="note" style="border-left: none;">
                     {#if note.note === "C3"}
-                        <div class="selected" on:dblclick={() => clearNote(i)}></div>
+                        <button
+                            class="selected"
+                            on:dblclick={() => clearNote(i)}
+                        ></button>
                     {/if}
                 </div>
                 {#each ["CS3", "D3", "DS3", "E3", "F3", "FS3", "G3", "GS3", "A3", "AS3", "B3", "C4", "CS4", "D4", "DS4", "E4", "F4", "FS4", "G4", "GS4", "A4", "AS4", "B4"] as noteType}
