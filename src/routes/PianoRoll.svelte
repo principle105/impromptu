@@ -41,15 +41,15 @@
     /* PUT HARD-CODED PREFABS HERE */
     // This is an example prefab
     let Prefab1: Note[] = [
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
-        { note: "", length: 1 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 8 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 16 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 4 },
+        { note: "", length: 1 / 4 },
         { note: "", length: 1 },
         { note: "", length: 1 },
         { note: "", length: 1 },
@@ -119,11 +119,11 @@
                 id={`line-${i}`}
                 class="line"
                 style="height: {note.length *
-                    30}px; background-color: {$selectedLine === i
+                    200}px; background-color: {$selectedLine === i
                     ? 'rgb(62, 62, 62)'
                     : ''}; border-top: {currPrefab.notes.length - 1 === i
                     ? ''
-                    : 'solid white'};"
+                    : 'solid white 0.5px'};"
                 on:click={() => {
                     selectedLine.update(() => i);
                 }}
@@ -175,6 +175,10 @@
     .note {
         /* width: 10%; */
         flex: auto;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+
         height: 100%;
         border-left: dashed gray;
     }

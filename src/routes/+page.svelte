@@ -48,9 +48,9 @@
                     let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
                     const newAudio = new Audio(src);
                     newAudio.play();
-                    await delay(element.length * 1000, cancelFlag);
+                    await delay(element.length * 4000, cancelFlag);
                 } else {
-                    await delay(element.length * 1000, cancelFlag);
+                    await delay(element.length * 4000, cancelFlag);
                 }
                 if (cancelFlag.isCancelled) {
                     throw new Error("Playback cancelled");
