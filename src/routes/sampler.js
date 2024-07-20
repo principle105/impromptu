@@ -1,6 +1,6 @@
 import * as Tone from 'tone';
 
 export default function sampler() {
-  return new Tone.Synth({
+  return new Tone.PolySynth({
   }).toDestination();
 }

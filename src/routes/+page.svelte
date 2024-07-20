@@ -10,6 +10,7 @@
         previewSynthCreated,
         generateIntervals,
         exampleProgression,
+        majorTriads,
     } from "./createPossibleNotes";
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
     import { onMount } from "svelte";
@@ -116,22 +117,44 @@
     async function playbackRecord() {
         let sampler: Tone.Synth<Tone.SynthOptions>;
         sampler = createSampler();
+        let backgroundSynth: Tone.Synth<Tone.SynthOptions>;
+        backgroundSynth = createSampler();
         let now = Tone.now();
         for (let i = 0; i < playbackArr.length; i++) {
             let delayTime = 1000 * playbackArr[i].length;
             hoverNote = playbackArr[i].name;
             rollRow = i;
-
+            
             if (playbackArr[i].name === "Rest") {
                 await delay(delayTime);
                 continue;
             }
 
+            let backingTrack;
+            let combineTracks;
+            let isBacking = false;
+            if (length % 1 == 0) {
+                backingTrack = majorTriads[playbackArr[i].name];
+                // console.log(backingTrack);
+                //hold for entire sequence
+                isBacking = true;
+                combineTracks = [backingTrack[0], backingTrack[1], backingTrack[2]];
+            }
             sampler.triggerAttackRelease(
                 playbackArr[i].name,
                 playbackArr[i].length,
                 now,
             );
+            backgroundSynth.volume.value = -20;
+            if(isBacking == true){
+              backgroundSynth.triggerAttackRelease(
+                combineTracks,
+                1,
+                now,
+            );
+            }
+            // only first note of the sequence
+
             now += playbackArr[i].length;
 
             await delay(delayTime);
@@ -195,7 +218,7 @@
             loadSampler();
             previewSynthCreated[0] = true;
         }
-        synthNotes.triggerAttackRelease(key, length);
+        synthNotes.triggerAttackRelease([key], length);
     }
 
     let currentlyPlaying = null;
