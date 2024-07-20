@@ -75,9 +75,8 @@
         // Handle dynamically setting choices
         let realKey = key.length === 3 ? key.substring(0, 2) : key[0];
 
-        // TODO: Randomize the chosen chord progression
+        // Chord progression randomized in createPossibleNotes at the bottom
         let chordProgression = exampleProgression;
-
         setNoteChoices(realKey, chordProgression);
     }
 
