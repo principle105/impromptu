@@ -149,7 +149,8 @@
     .note .selected {
         width: 100%;
         height: 100%;
-        background-color: rgb(6, 133, 212);
-        border-radius: 10px;
+        background-color: rgb(0, 153, 255);
+        border: solid rgb(72, 182, 255);
+        border-radius: 6px;
     }
 </style>
