@@ -11,8 +11,8 @@ let empty_recording: recording = {
 
 export let cntIndex = [0];
 export let fullNoteLength = 2;
+export let previewSynthCreated = [false];
 
-export let noteChoices = writable([["", "", "", "", "", ""]]);
 export let noteLength = writable([
     fullNoteLength / 4,
     fullNoteLength / 4,
@@ -24,6 +24,25 @@ export let playbackArr: recording[] = Array.from(
 );
 
 // very bad implementation whatever
+// export const reasonableNotesUp = {
+//   "C3": ["C3", "D3", "E3", "F3", "G3", "A#3", "C4"],
+//   "C#3": ["C#3", "F3", "G#3", ""],
+//   "D3": ["D3", "F#3", "A3"],
+//   "D#3": ["D#3", "G3", "A#3"],
+//   "E3": ["E3", "G#3", "B3"],
+//   "F3": ["F3", "A3", "C4"],
+//   "F#3": ["F#3", "A#3", "C#4"],
+//   "G3": ["G3", "B3", "D4"],
+//   "G#3": ["G#3", "C4", "D#4"],
+//   "A3": ["A3", "C#4", "E4"],
+//   "A#3": ["A#3", "D4", "F4"],
+//   "B3": ["B3", "D#4", "F#4"],
+// }
+
+// export const reasonableNotesDown = {
+  
+// }
+
 export const majorTriads = {
     C: ["C3", "E3", "G3"],
     "C#": ["C#3", "F3", "G#3"],
@@ -130,11 +149,11 @@ const noteNames = [
 // SCALES
 function generateMajorScale(key: string) {
     const majorIntervals = [2, 2, 1, 2, 2, 2, 1]; // Whole, Whole, Half, Whole, Whole, Whole, Half
-    let scale = [];
-    let startIndex = noteNames.indexOf(key);
+    const scale = [];
+    const startIndex = noteNames.indexOf(key);
     let currentIndex = startIndex;
 
-    for (let interval of majorIntervals) {
+    for (const interval of majorIntervals) {
         scale.push(noteNames[currentIndex]);
         currentIndex = (currentIndex + interval) % noteNames.length;
     }
@@ -145,11 +164,11 @@ function generateMajorScale(key: string) {
 
 function generateMinorScale(key: string) {
     const minorIntervals = [2, 1, 2, 2, 1, 2, 2]; // Whole, Half, Whole, Whole, Half, Whole, Whole
-    let scale = [];
-    let startIndex = noteNames.indexOf(key);
+    const scale = [];
+    const startIndex = noteNames.indexOf(key);
     let currentIndex = startIndex;
 
-    for (let interval of minorIntervals) {
+    for (const interval of minorIntervals) {
         scale.push(noteNames[currentIndex]);
         currentIndex = (currentIndex + interval) % noteNames.length;
     }
@@ -192,6 +211,5 @@ const IV_V_vi_IV = ["IV", "V", "VI", "IV"];
 
 // CHORD PROGRESSIONS
 export const exampleProgression = [...IV_V_vi_IV, ...DOMINANT_CADENCE];
-console.log(exampleProgression)
 
 //#endregion
