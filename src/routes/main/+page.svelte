@@ -202,12 +202,12 @@
         if (flagStart == false) {
             startingTimeNow = now;
         }
-        for (let i = 0; i < playbackArr.length; i++) {
-            let delayTime = 1000 * playbackArr[i].length;
-            hoverNote = playbackArr[i].name;
+        for (let i = 0; i < melodyToNotes.length; i++) {
+            let delayTime = 1000 * melodyToNotes[i].length;
+            hoverNote = melodyToNotes[i].name();
             rollRow = i;
 
-            if (playbackArr[i].name === "Rest") {
+            if (melodyToNotes[i].name() === "") {
                 await delay(delayTime);
                 continue;
             }
@@ -218,7 +218,7 @@
             console.log(now + " now");
             console.log(startingTimeNow + " original now");
             if ((now - startingTimeNow) % 1 == 0) {
-                backingTrack = majorTriads[playbackArr[i].name];
+                backingTrack = majorTriads[melodyToNotes[i].name()];
                 // console.log(backingTrack);
                 //hold for entire sequence
                 isBacking = true;
@@ -229,8 +229,8 @@
                 ];
             }
             sampler.triggerAttackRelease(
-                playbackArr[i].name,
-                playbackArr[i].length,
+                melodyToNotes[i].name(),
+                melodyToNotes[i].length,
                 now,
             );
             if (isBacking == true) {
@@ -239,7 +239,7 @@
             }
             // only first note of the sequence
 
-            now += playbackArr[i].length;
+            now += melodyToNotes[i].length;
 
             await delay(delayTime);
 
