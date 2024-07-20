@@ -13,18 +13,22 @@
         }
     }
 
-    function delay(ms : number) {
+    function delay(ms: number) {
         return new Promise((resolve) => setTimeout(resolve, ms));
     }
 
     let playback = async () => {
+
+
         for (let i = 0; i < $selectedPrefab.notes.length; i++) {
             let element = $selectedPrefab.notes[i];
+            selectedLine.update(() => i);
             if (element.note) {
                 let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
                 const newAudio = new Audio(src);
                 newAudio.play();
-                selectedLine.update(() => i);
+                await delay(element.length * 1000);
+            } else {
                 await delay(element.length * 1000);
             }
         }

@@ -3,8 +3,8 @@
     import { selectedNote, selectedLine, selectedPrefab } from "./stores";
 
     let viewport;
-    let currPrefab : RhythmPrefab | null;
-    $: currPrefab = $selectedPrefab; 
+    let currPrefab: RhythmPrefab | null;
+    $: currPrefab = $selectedPrefab;
 
     interface Note {
         note: string;
@@ -57,28 +57,14 @@
             if (prefab.notes[$selectedLine]) {
                 prefab.notes[$selectedLine].note = newNote;
                 $selectedPrefab = prefab;
-
-                
-                // Scroll to the selected line
-                await tick();
-
-                const selectedLineElement = document.getElementById(
-                    `line-${$selectedLine}`,
-                );
-                if (selectedLineElement) {
-                    selectedLineElement.scrollIntoView({
-                        behavior: "smooth",
-                        block: "center",
-                    });
-                }
             } else {
                 console.error(`No note found at line ${$selectedLine}`);
             }
         }
     });
 
-    function clearNote(index : number) {
-        selectedPrefab.update(prefab => {
+    function clearNote(index: number) {
+        selectedPrefab.update((prefab) => {
             if (prefab) {
                 let notes = [...prefab.notes];
                 notes[index] = { ...notes[index], note: "" }; // Clear the note at the specified index
@@ -90,9 +76,25 @@
 
     onMount(() => {
         selectedPrefab.set(createRhythmPrefab(Prefab1));
-    });
 
-    onDestroy(unsubscribe);
+        let unsubLine = selectedLine.subscribe(async () => {
+            await tick();
+
+            const selectedLineElement = document.getElementById(
+                `line-${$selectedLine}`,
+            );
+            if (selectedLineElement) {
+                selectedLineElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+            }
+        });
+        onDestroy(() => {
+            unsubscribe();
+            unsubLine();
+        });
+    });
 </script>
 
 <div class="viewport" bind:this={viewport}>
