@@ -12,7 +12,6 @@
     import PianoRoll from "$lib/components/PianoRoll.svelte";
     import createSampler from "./sampler.js";
     import Graph from "./Graph.svelte";
-    import { showKeys } from "$lib/stores.js";
     import {
         generateIntervals,
         exampleProgression,
@@ -222,6 +221,8 @@
         hoverNote = "";
         isPlaying = false;
     }
+
+    let showKeys = false;
 </script>
 
 {#if !keyInitialized}
@@ -254,33 +255,74 @@
 {:else}
     <div class="bg-[#1e1e1e] min-h-screen">
         <!-- HEADER -->
-        <div class="flex justify-between p-4">
-            <div class="flex items-center text-white">
-                <span class="mr-2">Show Keys</span>
-                <input
-                    type="checkbox"
-                    bind:checked={$showKeys}
-                    class="form-checkbox"
-                />
-            </div>
-            <div class="playback">
-                <button
-                    class="{isPlaying
-                        ? 'stop'
-                        : ''} bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black"
-                    disabled={!finished}
-                    on:click={() => {
-                        if (isPlaying) {
-                            stopPlayback();
-                        } else {
-                            playbackRecord();
-                        }
-                    }}
-                    >{isPlaying ? "Stop" : "Play"}
-                </button>
+        <div class="flex justify-between p-8 pb-12 items-center">
+            <h1 class="font-bold bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 bg-clip-text text-transparent inline-block text-5xl pl-12">
+                Impromptu
+            </h1>
+            <div class="ml-auto flex gap-8">
+                <div class="flex items-center text-white gap-2">
+                    <span
+                        class="bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 bg-clip-text text-transparent inline-block"
+                        >Show Keys</span
+                    >
+                    <label class="inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            class="sr-only peer"
+                            bind:checked={showKeys}
+                        />
+                        <div
+                            class="relative w-12 h-6 bg-gray-300 rounded-full
+                                peer peer-checked:after:translate-x-full
+                                rtl:peer-checked:after:-translate-x-full
+                                peer-checked:after:border-white after:content-['']
+                                after:absolute after:top-[2px] after:start-[2px]
+                                after:bg-white after:border-gray-300 after:border
+                                after:rounded-full after:h-5
+                                after:w-5 after:transition-all
+                                peer-checked:bg-gray-500"
+                        ></div>
+                    </label>
+                </div>
+                <div>
+                    <button
+                        class="
+                bg-transparent
+                text-[#f8f8ff]
+                border-2
+                border-[#f8f8ff]
+                rounded
+                px-4
+                py-2
+                cursor-pointer
+                text-lg
+                transition-colors
+                hover:bg-[#f8f8ff]
+                hover:text-black
+                {!isPlaying && finished
+                            ? 'border-green-400 text-green-300 hover:bg-green-100 hover:text-black'
+                            : finished
+                              ? 'border-red-400 text-red-300 hover:bg-red-100 hover:text-black'
+                              : ''}
+              "
+                        on:click={() => {
+                            if (!finished) {
+                                finish();
+                            } else {
+                                if (isPlaying) {
+                                    stopPlayback();
+                                } else {
+                                    playbackRecord();
+                                }
+                            }
+                        }}
+                        >{!finished ? "Finish" : isPlaying ? "Stop" : "Play"}
+                    </button>
+                </div>
             </div>
         </div>
-        <div class="grid grid-cols-6 gap-4">
+
+        <div class="grid grid-cols-7 gap-4">
             <div class="col-span-4 flex justify-center items-center flex-col">
                 <div class="flex">
                     <div>
@@ -321,6 +363,7 @@
                                 selectableNotes={!finished
                                     ? noteChoices[measureIndex].notes
                                     : allNotes()}
+                                {showKeys}
                             ></Piano>
                         </div>
                     </div>
@@ -329,8 +372,6 @@
                             on:click={() => {
                                 if (measureIndex < noteChoices.length - 1) {
                                     nextMeasure();
-                                } else {
-                                    finish();
                                 }
                             }}
                             class="text-gray-400 p-4 hover:text-gray-300"
@@ -371,7 +412,7 @@
                     {/each}
                 </div>
             </div>
-            <div class="col-span-2">
+            <div class="col-span-3 p-4 max-h-full box-border">
                 <Graph bind:this={graphRef} notes={melodyToNotes} />
             </div>
         </div>

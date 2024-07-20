@@ -94,4 +94,4 @@
     });
 </script>
 
-<canvas id="myChart" width="400" height="400"></canvas>
+<canvas id="myChart" width="400" height="325"></canvas>

@@ -1,12 +1,12 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
-    import { showKeys } from "../stores";
     import { Note, allNotes } from "../../routes/main/createPossibleNotes";
 
     export let hoverNote: string;
     export let playNote: (key: Note) => void;
     export let selectableNotes: Note[] = allNotes();
+    export let showKeys = false;
 
     if (!selectableNotes) selectableNotes = allNotes();
 
@@ -101,7 +101,7 @@
         on:mouseleave={() => hideNote("key-1")}
         on:mousedown={() => playNote(pianoNoteComponents[0].note)}
     >
-        {#if $notesVisible["key-1"] || $showKeys || hoverNote === pianoNoteComponents[0].note.name()}
+        {#if $notesVisible["key-1"] || showKeys || hoverNote === pianoNoteComponents[0].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[0].note.name() ? "font-bold" : ""}`}
@@ -120,7 +120,7 @@
         on:mouseleave={() => hideNote("key-2")}
         on:mousedown={() => playNote(pianoNoteComponents[1].note)}
     >
-        {#if $notesVisible["key-2"] || $showKeys || hoverNote === pianoNoteComponents[1].note.name()}
+        {#if $notesVisible["key-2"] || showKeys || hoverNote === pianoNoteComponents[1].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[1].note.name() ? "font-bold" : ""}`}
@@ -139,7 +139,7 @@
         on:mouseleave={() => hideNote("key-3")}
         on:mousedown={() => playNote(pianoNoteComponents[2].note)}
     >
-        {#if $notesVisible["key-3"] || $showKeys || hoverNote === pianoNoteComponents[2].note.name()}
+        {#if $notesVisible["key-3"] || showKeys || hoverNote === pianoNoteComponents[2].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[2].note.name() ? "font-bold" : ""}`}
@@ -158,7 +158,7 @@
         on:mouseleave={() => hideNote("key-4")}
         on:mousedown={() => playNote(pianoNoteComponents[3].note)}
     >
-        {#if $notesVisible["key-4"] || $showKeys || hoverNote === pianoNoteComponents[3].note.name()}
+        {#if $notesVisible["key-4"] || showKeys || hoverNote === pianoNoteComponents[3].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[3].note.name() ? "font-bold" : ""}`}
@@ -177,7 +177,7 @@
         on:mouseleave={() => hideNote("key-5")}
         on:mousedown={() => playNote(pianoNoteComponents[4].note)}
     >
-        {#if $notesVisible["key-5"] || $showKeys || hoverNote === pianoNoteComponents[4].note.name()}
+        {#if $notesVisible["key-5"] || showKeys || hoverNote === pianoNoteComponents[4].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[4].note.name() ? "font-bold" : ""}`}
@@ -196,7 +196,7 @@
         on:mouseleave={() => hideNote("key-6")}
         on:mousedown={() => playNote(pianoNoteComponents[5].note)}
     >
-        {#if $notesVisible["key-6"] || $showKeys || hoverNote === pianoNoteComponents[5].note.name()}
+        {#if $notesVisible["key-6"] || showKeys || hoverNote === pianoNoteComponents[5].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[5].note.name() ? "font-bold" : ""}`}
@@ -215,7 +215,7 @@
         on:mouseleave={() => hideNote("key-7")}
         on:mousedown={() => playNote(pianoNoteComponents[6].note)}
     >
-        {#if $notesVisible["key-7"] || $showKeys || hoverNote === pianoNoteComponents[6].note.name()}
+        {#if $notesVisible["key-7"] || showKeys || hoverNote === pianoNoteComponents[6].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[6].note.name() ? "font-bold" : ""}`}
@@ -234,7 +234,7 @@
         on:mouseleave={() => hideNote("key-8")}
         on:mousedown={() => playNote(pianoNoteComponents[7].note)}
     >
-        {#if $notesVisible["key-8"] || $showKeys || hoverNote === pianoNoteComponents[7].note.name()}
+        {#if $notesVisible["key-8"] || showKeys || hoverNote === pianoNoteComponents[7].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[7].note.name() ? "font-bold" : ""}`}
@@ -253,7 +253,7 @@
         on:mouseleave={() => hideNote("key-9")}
         on:mousedown={() => playNote(pianoNoteComponents[8].note)}
     >
-        {#if $notesVisible["key-9"] || $showKeys || hoverNote === pianoNoteComponents[8].note.name()}
+        {#if $notesVisible["key-9"] || showKeys || hoverNote === pianoNoteComponents[8].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[8].note.name() ? "font-bold" : ""}`}
@@ -272,7 +272,7 @@
         on:mouseleave={() => hideNote("key-10")}
         on:mousedown={() => playNote(pianoNoteComponents[9].note)}
     >
-        {#if $notesVisible["key-10"] || $showKeys || hoverNote === pianoNoteComponents[9].note.name()}
+        {#if $notesVisible["key-10"] || showKeys || hoverNote === pianoNoteComponents[9].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[9].note.name() ? "font-bold" : ""}`}
@@ -291,7 +291,7 @@
         on:mouseleave={() => hideNote("key-11")}
         on:mousedown={() => playNote(pianoNoteComponents[10].note)}
     >
-        {#if $notesVisible["key-11"] || $showKeys || hoverNote === pianoNoteComponents[10].note.name()}
+        {#if $notesVisible["key-11"] || showKeys || hoverNote === pianoNoteComponents[10].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[10].note.name() ? "font-bold" : ""}`}
@@ -309,7 +309,7 @@
         on:mouseleave={() => hideNote("key-12")}
         on:mousedown={() => playNote(pianoNoteComponents[11].note)}
     >
-        {#if $notesVisible["key-12"] || $showKeys || hoverNote === pianoNoteComponents[11].note.name()}
+        {#if $notesVisible["key-12"] || showKeys || hoverNote === pianoNoteComponents[11].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[11].note.name() ? "font-bold" : ""}`}
@@ -327,7 +327,7 @@
         on:mouseleave={() => hideNote("key-13")}
         on:mousedown={() => playNote(pianoNoteComponents[12].note)}
     >
-        {#if $notesVisible["key-13"] || $showKeys || hoverNote === pianoNoteComponents[12].note.name()}
+        {#if $notesVisible["key-13"] || showKeys || hoverNote === pianoNoteComponents[12].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[12].note.name() ? "font-bold" : ""}`}
@@ -346,7 +346,7 @@
         on:mouseleave={() => hideNote("key-14")}
         on:mousedown={() => playNote(pianoNoteComponents[13].note)}
     >
-        {#if $notesVisible["key-14"] || $showKeys || hoverNote === pianoNoteComponents[13].note.name()}
+        {#if $notesVisible["key-14"] || showKeys || hoverNote === pianoNoteComponents[13].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[13].note.name() ? "font-bold" : ""}`}
@@ -365,7 +365,7 @@
         on:mouseleave={() => hideNote("key-15")}
         on:mousedown={() => playNote(pianoNoteComponents[14].note)}
     >
-        {#if $notesVisible["key-15"] || $showKeys || hoverNote === pianoNoteComponents[14].note.name()}
+        {#if $notesVisible["key-15"] || showKeys || hoverNote === pianoNoteComponents[14].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[14].note.name() ? "font-bold" : ""}`}
@@ -384,7 +384,7 @@
         on:mouseleave={() => hideNote("key-16")}
         on:mousedown={() => playNote(pianoNoteComponents[15].note)}
     >
-        {#if $notesVisible["key-16"] || $showKeys || hoverNote === pianoNoteComponents[15].note.name()}
+        {#if $notesVisible["key-16"] || showKeys || hoverNote === pianoNoteComponents[15].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[15].note.name() ? "font-bold" : ""}`}
@@ -403,7 +403,7 @@
         on:mouseleave={() => hideNote("key-17")}
         on:mousedown={() => playNote(pianoNoteComponents[16].note)}
     >
-        {#if $notesVisible["key-17"] || $showKeys || hoverNote === pianoNoteComponents[16].note.name()}
+        {#if $notesVisible["key-17"] || showKeys || hoverNote === pianoNoteComponents[16].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[16].note.name() ? "font-bold" : ""}`}
@@ -422,7 +422,7 @@
         on:mouseleave={() => hideNote("key-18")}
         on:mousedown={() => playNote(pianoNoteComponents[17].note)}
     >
-        {#if $notesVisible["key-18"] || $showKeys || hoverNote === pianoNoteComponents[17].note.name()}
+        {#if $notesVisible["key-18"] || showKeys || hoverNote === pianoNoteComponents[17].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[17].note.name() ? "font-bold" : ""}`}
@@ -441,7 +441,7 @@
         on:mouseleave={() => hideNote("key-19")}
         on:mousedown={() => playNote(pianoNoteComponents[18].note)}
     >
-        {#if $notesVisible["key-19"] || $showKeys || hoverNote === pianoNoteComponents[18].note.name()}
+        {#if $notesVisible["key-19"] || showKeys || hoverNote === pianoNoteComponents[18].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[18].note.name() ? "font-bold" : ""}`}
@@ -460,7 +460,7 @@
         on:mouseleave={() => hideNote("key-20")}
         on:mousedown={() => playNote(pianoNoteComponents[19].note)}
     >
-        {#if $notesVisible["key-20"] || $showKeys || hoverNote === pianoNoteComponents[19].note.name()}
+        {#if $notesVisible["key-20"] || showKeys || hoverNote === pianoNoteComponents[19].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[19].note.name() ? "font-bold" : ""}`}
@@ -479,7 +479,7 @@
         on:mouseleave={() => hideNote("key-21")}
         on:mousedown={() => playNote(pianoNoteComponents[20].note)}
     >
-        {#if $notesVisible["key-21"] || $showKeys || hoverNote === pianoNoteComponents[20].note.name()}
+        {#if $notesVisible["key-21"] || showKeys || hoverNote === pianoNoteComponents[20].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[20].note.name() ? "font-bold" : ""}`}
@@ -498,7 +498,7 @@
         on:mouseleave={() => hideNote("key-22")}
         on:mousedown={() => playNote(pianoNoteComponents[21].note)}
     >
-        {#if $notesVisible["key-22"] || $showKeys || hoverNote === pianoNoteComponents[21].note.name()}
+        {#if $notesVisible["key-22"] || showKeys || hoverNote === pianoNoteComponents[21].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[21].note.name() ? "font-bold" : ""}`}
@@ -517,7 +517,7 @@
         on:mouseleave={() => hideNote("key-23")}
         on:mousedown={() => playNote(pianoNoteComponents[22].note)}
     >
-        {#if $notesVisible["key-23"] || $showKeys || hoverNote === pianoNoteComponents[22].note.name()}
+        {#if $notesVisible["key-23"] || showKeys || hoverNote === pianoNoteComponents[22].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[22].note.name() ? "font-bold" : ""}`}
@@ -535,7 +535,7 @@
         on:mouseleave={() => hideNote("key-24")}
         on:mousedown={() => playNote(pianoNoteComponents[23].note)}
     >
-        {#if $notesVisible["key-24"] || $showKeys || hoverNote === pianoNoteComponents[23].note.name()}
+        {#if $notesVisible["key-24"] || showKeys || hoverNote === pianoNoteComponents[23].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[23].note.name() ? "font-bold" : ""}`}
@@ -554,7 +554,7 @@
         on:mouseleave={() => hideNote("key-25")}
         on:mousedown={() => playNote(pianoNoteComponents[24].note)}
     >
-        {#if $notesVisible["key-25"] || $showKeys || hoverNote === pianoNoteComponents[24].note.name()}
+        {#if $notesVisible["key-25"] || showKeys || hoverNote === pianoNoteComponents[24].note.name()}
             <div
                 transition:fly={{ y: 10, duration: 300 }}
                 class={`note ${hoverNote === pianoNoteComponents[24].note.name() ? "font-bold" : ""}`}
