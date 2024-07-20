@@ -3,6 +3,7 @@
     import { selectedNote, selectedLine, selectedPrefab } from "$lib/stores";
 
     export let notes: string[][];
+    export let index: number;
     export let lengths: number[];
     export let hoverNote: string;
 
@@ -116,9 +117,9 @@
     });
 </script>
 
-{#if notes}
+{#if notes && index < notes.length}
     <div class="viewport" bind:this={viewport}>
-        {#each notes[0] as note, i}
+        {#each notes[index] as note, i}
             {#if note && lengths[i]}
                 <button
                     id={`line-${i}`}

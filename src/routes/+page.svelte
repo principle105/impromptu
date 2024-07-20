@@ -2,9 +2,13 @@
     import * as Tone from "tone";
     import Piano from "../lib/components/Piano.svelte";
     import PianoRoll from "../lib/components/PianoRoll.svelte";
-    import { selectedLine, selectedNote, selectedPrefab } from "../lib/stores.js";
+    import {
+        selectedLine,
+        selectedNote,
+        selectedPrefab,
+    } from "../lib/stores.js";
     import createSampler from "./sampler.js";
-    import { showKeys } from "../lib/stores.js";
+    import { showKeys } from "$lib/stores.js";
     import {
         selectQuarterNotesRandom,
         createPossibleNotes,
@@ -14,10 +18,15 @@
         type recording,
         cntIndex,
         fullNoteLength,
+        exampleProgression,
+        generateIntervals,
     } from "./createPossibleNotes";
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
 
     let hoverNote: string;
+    let pianoDisabled: boolean = false;
+
+    let choiceIndex = 0;
 
     export function playbackRecord() {
         let sampler: Tone.Synth<Tone.SynthOptions>;
@@ -60,13 +69,14 @@
         playbackArr[cntIndex[0]] = save;
         cntIndex[0]++;
 
-        let temp = $noteChoices;
-        // change to be based on chord progression
-        temp[0] = selectQuarterNotesRandom(createPossibleNotes("C3"));
-        $noteChoices = temp;
+        // let temp = $noteChoices;
+        // // change to be based on chord progression
+        // temp[0] = selectQuarterNotesRandom(createPossibleNotes("C3"));
+        // $noteChoices = temp;
 
         console.log(playbackArr);
         noteLength;
+        choiceIndex++;
     }
 
     export function playNote(key: string, length: number) {
@@ -77,9 +87,12 @@
     }
 
     let canPlay = false;
+
     $: {
-        if ($selectedPrefab) {
-            canPlay = $selectedPrefab.notes.some((note) => note.note !== "");
+        if ($noteChoices) {
+            canPlay = $noteChoices[0].some(
+                (note) => note !== undefined && note !== "",
+            );
         } else {
             canPlay = false;
         }
@@ -146,7 +159,7 @@
             <button
                 class={isPlaying ? "stop" : ""}
                 disabled={!canPlay}
-                on:click={playback}
+                on:click={playbackRecord}
                 >{isPlaying ? "Stop" : "Play"}
             </button>
         </div>
@@ -185,27 +198,34 @@
     <button class="buttonthings" on:click={() => playbackRecord()}>
         PLAYBACK
     </button>
-    <PianoRoll notes={$noteChoices} lengths={$noteLength} {hoverNote}></PianoRoll>
-    <Piano {hoverNote}></Piano>
+    <PianoRoll
+        notes={$noteChoices}
+        index={choiceIndex}
+        lengths={$noteLength}
+        {hoverNote}
+    ></PianoRoll>
+    <Piano {hoverNote} disabled={pianoDisabled}></Piano>
 
-    <div class="mt-8 flex flex-row items-center justify-center">
-        {#each $noteChoices[0] as note, i}
-            {#if note && $noteLength[i]}
-                <ChoiceButton
-                    click={() => saveNote(note, $noteLength[i])}
-                    mouseenter={() => {
-                        hoverNote = note;
-                        playNote(note, $noteLength[i]);
-                    }}
-                    mouseexit={() => {
-                        hoverNote = "";
-                    }}
-                    {note}
-                    length={$noteLength[i]}
-                ></ChoiceButton>
-            {/if}
-        {/each}
-    </div>
+    {#if choiceIndex < $noteChoices.length}
+        <div class="mt-8 flex flex-row items-center justify-center">
+            {#each $noteChoices[choiceIndex] as note, i}
+                {#if note && $noteLength[i]}
+                    <ChoiceButton
+                        click={() => saveNote(note, $noteLength[i])}
+                        mouseenter={() => {
+                            hoverNote = note;
+                            playNote(note, $noteLength[i]);
+                        }}
+                        mouseexit={() => {
+                            hoverNote = "";
+                        }}
+                        {note}
+                        length={$noteLength[i]}
+                    ></ChoiceButton>
+                {/if}
+            {/each}
+        </div>
+    {/if}
 </div>
 
 <style>

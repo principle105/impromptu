@@ -6,9 +6,12 @@
     import * as Tone from "tone";
     import {
         createPossibleNotes,
+        exampleProgression,
+        generateIntervals,
         noteChoices,
         selectQuarterNotesRandom,
     } from "../../routes/createPossibleNotes";
+    import { shuffle } from "$lib/util";
     // manually imported, might be incorrect
     // import { Synth } from "tone/build/esm/instrument/Synth";
     // import { PolySynth } from "tone/build/esm/instrument/PolySynth";
@@ -29,6 +32,7 @@
     // the time of the entire piece
     export let timePiece = 0;
     export let hoverNote: string;
+    export let disabled: boolean;
 
     let seconds = 0;
     let interval: any;
@@ -133,9 +137,32 @@
         // console.log(recordingArr);
         // console.log(createPossibleNotes(key.name));
         // console.log(selectQuarterNotesRandom(createPossibleNotes(key.name)));
-        $noteChoices[0] = selectQuarterNotesRandom(
-            createPossibleNotes(key.name),
-        );
+
+        // $noteChoices[0] = selectQuarterNotesRandom(
+        //     createPossibleNotes(key.name),
+        // );
+
+        let realKey =
+            key.name.length === 3 ? key.name.substring(0, 1) : key.name[0];
+
+        let intervals = generateIntervals(realKey);
+        console.log(intervals);
+
+        exampleProgression.forEach((element: string, i) => {
+            $noteChoices[i] = [];
+            
+            intervals[element] = shuffle(intervals[element]);
+            intervals[element].forEach((note : string) => {
+                let octave = Math.floor(Math.random()) + 3;
+                if (i === $noteChoices.length - 1) {
+                    $noteChoices[i].push(key.name);
+                    return;
+                }
+                $noteChoices[i].push(note + octave);
+            });
+            console.log(i + ": " + $noteChoices[i]);
+        });
+
         // let why = Array.from({ length: 10000 }, () => empty_thing);
         // console.log(why);
         // console.log("j");
@@ -175,6 +202,7 @@
 
 <div class="container">
     <button
+        {disabled}
         aria-roledescription="C note"
         id="key-1"
         class="key white"
@@ -185,10 +213,16 @@
         on:mouseup={() => playNoteDown(C3, 32, false)}
     >
         {#if $notesVisible["key-1"] || $showKeys || hoverNote === "C3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">C</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "C3" ? "font-bold" : ""}`}
+            >
+                C
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-2"
         class="key black"
         on:mouseover={() => showNote("key-2")}
@@ -198,10 +232,16 @@
         on:mouseup={() => playNoteDown(CS3, 32, false)}
     >
         {#if $notesVisible["key-2"] || $showKeys || hoverNote === "C#3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">C#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "C#3" ? "font-bold" : ""}`}
+            >
+                C#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-3"
         class="key white"
         on:mouseover={() => showNote("key-3")}
@@ -211,10 +251,16 @@
         on:mouseup={() => playNoteDown(D3, 32, false)}
     >
         {#if $notesVisible["key-3"] || $showKeys || hoverNote === "D"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">D</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "D3" ? "font-bold" : ""}`}
+            >
+                D
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-4"
         class="key black"
         on:mouseover={() => showNote("key-4")}
@@ -224,10 +270,16 @@
         on:mouseup={() => playNoteDown(DS3, 32, false)}
     >
         {#if $notesVisible["key-4"] || $showKeys || hoverNote === "D#3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">D#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "D#3" ? "font-bold" : ""}`}
+            >
+                D#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-5"
         class="key white"
         on:mouseover={() => showNote("key-5")}
@@ -237,10 +289,16 @@
         on:mouseup={() => playNoteDown(E3, 32, false)}
     >
         {#if $notesVisible["key-5"] || $showKeys || hoverNote === "E3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">E</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "E3" ? "font-bold" : ""}`}
+            >
+                E
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-6"
         class="key white"
         on:mouseover={() => showNote("key-6")}
@@ -250,10 +308,16 @@
         on:mouseup={() => playNoteDown(F3, 32, false)}
     >
         {#if $notesVisible["key-6"] || $showKeys || hoverNote === "F3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">F</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "F3" ? "font-bold" : ""}`}
+            >
+                F
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-7"
         class="key black"
         on:mouseover={() => showNote("key-7")}
@@ -263,10 +327,16 @@
         on:mouseup={() => playNoteDown(FS3, 32, false)}
     >
         {#if $notesVisible["key-7"] || $showKeys || hoverNote === "F#3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">F#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "F#3" ? "font-bold" : ""}`}
+            >
+                F#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-8"
         class="key white"
         on:mouseover={() => showNote("key-8")}
@@ -276,10 +346,16 @@
         on:mouseup={() => playNoteDown(G3, 32, false)}
     >
         {#if $notesVisible["key-8"] || $showKeys || hoverNote === "G3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">G</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "G3" ? "font-bold" : ""}`}
+            >
+                G
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-9"
         class="key black"
         on:mouseover={() => showNote("key-9")}
@@ -289,10 +365,16 @@
         on:mouseup={() => playNoteDown(GS3, 32, false)}
     >
         {#if $notesVisible["key-9"] || $showKeys || hoverNote === "G#3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">G#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "G#3" ? "font-bold" : ""}`}
+            >
+                G#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-10"
         class="key white"
         on:mouseover={() => showNote("key-10")}
@@ -302,10 +384,16 @@
         on:mouseup={() => playNoteDown(A3, 32, false)}
     >
         {#if $notesVisible["key-10"] || $showKeys || hoverNote === "A3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">A</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "A3" ? "font-bold" : ""}`}
+            >
+                A
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-11"
         class="key black"
         on:mouseover={() => showNote("key-11")}
@@ -315,10 +403,16 @@
         on:mouseup={() => playNoteDown(AS3, 32, false)}
     >
         {#if $notesVisible["key-11"] || $showKeys || hoverNote === "A#3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">A#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "A#3" ? "font-bold" : ""}`}
+            >
+                A#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-12"
         class="key white"
         on:mouseover={() => showNote("key-12")}
@@ -328,10 +422,16 @@
         on:mouseup={() => playNoteDown(B3, 32, false)}
     >
         {#if $notesVisible["key-12"] || $showKeys || hoverNote === "B3"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">B</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "B3" ? "font-bold" : ""}`}
+            >
+                B
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-13"
         class="key white"
         on:mouseover={() => showNote("key-13")}
@@ -341,10 +441,16 @@
         on:mouseup={() => playNoteDown(C4, 32, false)}
     >
         {#if $notesVisible["key-13"] || $showKeys || hoverNote === "C4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">C</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "C4" ? "font-bold" : ""}`}
+            >
+                C
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-14"
         class="key black"
         on:mouseover={() => showNote("key-14")}
@@ -354,10 +460,16 @@
         on:mouseup={() => playNoteDown(CS4, 32, false)}
     >
         {#if $notesVisible["key-14"] || $showKeys || hoverNote === "C#4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">C#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "C#4" ? "font-bold" : ""}`}
+            >
+                C#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-15"
         class="key white"
         on:mouseover={() => showNote("key-15")}
@@ -367,10 +479,16 @@
         on:mouseup={() => playNoteDown(D4, 32, false)}
     >
         {#if $notesVisible["key-15"] || $showKeys || hoverNote === "D4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">D</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "D4" ? "font-bold" : ""}`}
+            >
+                D
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-16"
         class="key black"
         on:mouseover={() => showNote("key-16")}
@@ -380,10 +498,16 @@
         on:mouseup={() => playNoteDown(DS4, 32, false)}
     >
         {#if $notesVisible["key-16"] || $showKeys || hoverNote === "D#4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">D#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "D#4" ? "font-bold" : ""}`}
+            >
+                D#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-17"
         class="key white"
         on:mouseover={() => showNote("key-17")}
@@ -393,10 +517,16 @@
         on:mouseup={() => playNoteDown(E4, 32, false)}
     >
         {#if $notesVisible["key-17"] || $showKeys || hoverNote === "E4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">E</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "E4" ? "font-bold" : ""}`}
+            >
+                E
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-18"
         class="key white"
         on:mouseover={() => showNote("key-18")}
@@ -406,10 +536,16 @@
         on:mouseup={() => playNoteDown(F4, 32, false)}
     >
         {#if $notesVisible["key-18"] || $showKeys || hoverNote === "F4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">F</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "F4" ? "font-bold" : ""}`}
+            >
+                F
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-19"
         class="key black"
         on:mouseover={() => showNote("key-19")}
@@ -419,10 +555,16 @@
         on:mouseup={() => playNoteDown(FS4, 32, false)}
     >
         {#if $notesVisible["key-19"] || $showKeys || hoverNote === "F#4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">F#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "F#4" ? "font-bold" : ""}`}
+            >
+                F#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-20"
         class="key white"
         on:mouseover={() => showNote("key-20")}
@@ -432,10 +574,16 @@
         on:mouseup={() => playNoteDown(G4, 32, false)}
     >
         {#if $notesVisible["key-20"] || $showKeys || hoverNote === "G4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">G</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "G4" ? "font-bold" : ""}`}
+            >
+                G
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-21"
         class="key black"
         on:mouseover={() => showNote("key-21")}
@@ -445,10 +593,16 @@
         on:mouseup={() => playNoteDown(GS4, 32, false)}
     >
         {#if $notesVisible["key-21"] || $showKeys || hoverNote === "G#4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">G#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "G#4" ? "font-bold" : ""}`}
+            >
+                G#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-22"
         class="key white"
         on:mouseover={() => showNote("key-22")}
@@ -458,10 +612,16 @@
         on:mouseup={() => playNoteDown(A4, 32, false)}
     >
         {#if $notesVisible["key-22"] || $showKeys || hoverNote === "A4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">A</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "A4" ? "font-bold" : ""}`}
+            >
+                A
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-23"
         class="key black"
         on:mouseover={() => showNote("key-23")}
@@ -471,10 +631,16 @@
         on:mouseup={() => playNoteDown(AS4, 32, false)}
     >
         {#if $notesVisible["key-23"] || $showKeys || hoverNote === "A#4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">A#</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "A#4" ? "font-bold" : ""}`}
+            >
+                A#
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-24"
         class="key white"
         on:mouseover={() => showNote("key-24")}
@@ -484,10 +650,16 @@
         on:mouseup={() => playNoteDown(B4, 32, false)}
     >
         {#if $notesVisible["key-24"] || $showKeys || hoverNote === "B4"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">B</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "B4" ? "font-bold" : ""}`}
+            >
+                B
+            </div>
         {/if}
     </button>
     <button
+        {disabled}
         id="key-25"
         class="key white"
         on:mouseover={() => showNote("key-25")}
@@ -497,7 +669,12 @@
         on:mouseup={() => playNoteDown(C5, 32, false)}
     >
         {#if $notesVisible["key-25"] || $showKeys || hoverNote === "C5"}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">C</div>
+            <div
+                transition:fly={{ y: 10, duration: 300 }}
+                class={`note ${hoverNote === "C5" ? "font-bold" : ""}`}
+            >
+                C
+            </div>
         {/if}
     </button>
 </div>
