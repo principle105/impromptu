@@ -1,16 +1,17 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
     import { Note } from "../../routes/main/createPossibleNotes";
+    import IconTrash from "~icons/solar/trash-bin-minimalistic-line-duotone";
 
     export let notes: Note[];
     export let selectedIndex: number;
 
     $: if (!notes || !notes.length) {
         notes = [
-            new Note("", "", 1/4),
-            new Note("", "", 1/4),
-            new Note("", "", 1/4),
-            new Note("", "", 1/4)
+            new Note("", "", 1 / 4),
+            new Note("", "", 1 / 4),
+            new Note("", "", 1 / 4),
+            new Note("", "", 1 / 4),
         ];
     }
 
@@ -45,29 +46,27 @@
 </script>
 
 {#if notes}
-    <div class="viewport" bind:this={viewport}>
+    <div class="viewport bg-black w-[642.9px] h-[300px] overflow-auto flex flex-col-reverse border border-[#595959] p-2" bind:this={viewport}>
         {#each notes as note, i}
             {#if note}
                 <button
-                    on:click={() => selectedIndex = i}
+                    on:click={() => (selectedIndex = i)}
                     id={`line-${i}`}
-                    class="line"
-                    style="height: {note.length *
-                        100}%; background-color: {selectedIndex === i
-                        ? 'rgb(62, 62, 62)'
-                        : ''}; border-top: {notes[0].length - 1 === i
-                        ? ''
-                        : 'solid white'};"
+                    class="flex-shrink-0 flex w-full"
+                    style="height: {note.length * 100}%; background-color: {selectedIndex === i ? 'rgb(62, 62, 62)' : ''}; border-top: {notes[0].length - 1 === i ? '' : 'solid white'};"
                 >
-                    <div class="note" style="border-left: none;">
-                        {#if note.name() === "C3"}
-                            <div class="selected"></div>
-                        {/if}
-                    </div>
-                    {#each ["C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5"] as noteType}
-                        <div class="note">
+                    {#each ["C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5"] as noteType}
+                        <div class="note w-fit flex-auto h-full border-l border-dashed border-gray-500 first:border-none">
                             {#if note.name() === noteType}
-                                <div class="selected"></div>
+                                <button
+                                    on:click={() => {
+                                        note.note = "";
+                                        note.octave = "";
+                                    }}
+                                    class="flex items-center justify-center bg-blue-500 border border-blue-700 rounded-md relative z-10 hover:bg-blue-500 group w-full h-full transition duration-300 ease-in-out transform hover:scale-105 shadow-lg"
+                                >
+                                    <IconTrash class="hidden group-hover:block text-white"></IconTrash>
+                                </button>
                             {/if}
                         </div>
                     {/each}
@@ -76,45 +75,3 @@
         {/each}
     </div>
 {/if}
-
-<style>
-    .viewport {
-        background-color: black;
-        /* margin-left: 42.9px; */
-        width: 642.9px;
-        height: fit-content;
-        height: 300px;
-        overflow: auto;
-        display: flex;
-        flex-direction: column-reverse;
-        border: #595959 solid;
-        padding: 2px;
-    }
-
-    .line {
-        display: flex;
-        flex-shrink: 0;
-    }
-    .line:hover {
-        background-color: rgb(62, 62, 62);
-    }
-
-    .note {
-        /* width: 10%; */
-        flex: auto;
-        height: 100%;
-        border-left: dashed gray;
-    }
-
-    .note .selected {
-        width: 100%;
-        height: 100%;
-        background-color: rgb(0, 153, 255);
-        border: solid rgb(72, 182, 255);
-        border-radius: 6px;
-        z-index: 1;
-    }
-    .note .selected:hover {
-        background-color: rgb(28, 164, 255);
-    }
-</style>

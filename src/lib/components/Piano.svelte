@@ -21,14 +21,6 @@
 
     if (!selectableNotes) selectableNotes = allNotes();
 
-    let seconds = 0;
-    let interval: any;
-    let sampler: Tone.Synth<Tone.SynthOptions>;
-    let hasLoaded = true;
-    function loadSampler() {
-        sampler = createSampler();
-    }
-
     function activateSelectableNotes(notes: Note[]) {
         if (!notes) return;
 
@@ -108,14 +100,6 @@
     function hideNote(key: string) {
         notesVisible.update((nv) => ({ ...nv, [key]: false }));
     }
-
-    const startInterval = () => {
-        clearInterval(interval);
-        interval = setInterval(() => {
-            seconds++;
-            // console.log(seconds);
-        }, 10);
-    };
 </script>
 
 <div class="container">
