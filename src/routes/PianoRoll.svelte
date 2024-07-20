@@ -51,7 +51,7 @@
         { note: "", length: 1 },
     ];
 
-    const unsubscribe = selectedNote.subscribe(async (newNote: string) => {
+    const unsubscribe = selectedNote.subscribe(async ({note: newNote}) => {
         if (currPrefab) {
             console.log("Setting new note...");
             const prefab: RhythmPrefab = currPrefab;
@@ -123,7 +123,7 @@
         background-color: black;
         width: 600px;
         height: fit-content;
-        max-height: 200px;
+        max-height: 300px;
         overflow: auto;
         display: flex;
         flex-direction: column-reverse;

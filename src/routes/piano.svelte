@@ -1,8 +1,14 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
-    import { selectedNote, selectedLine, showKeys, selectedPrefab} from "./stores";
+    import {
+        selectedNote,
+        selectedLine,
+        showKeys,
+        selectedPrefab,
+    } from "./stores";
 
+    const currAudio = writable<HTMLAudioElement | null>(null);
 
     interface Note {
         value: HTMLAudioElement;
@@ -70,12 +76,26 @@
     }
 
     function playNote(key: Note) {
-        selectedNote.set("");
-        selectedNote.set(key.name);
-        if ($selectedPrefab && $selectedLine + 1 < $selectedPrefab.notes.length) {
+        selectedNote.update(() => {
+            return { note: key.name };
+        });
+        if (
+            $selectedPrefab &&
+            $selectedLine + 1 < $selectedPrefab.notes.length
+        ) {
             selectedLine.update((n) => n + 1);
         }
-        key.value.play();
+
+        currAudio.update((current) => {
+            if (current) {
+                current.pause();
+                current.currentTime = 0;
+            }
+
+            const newAudio = new Audio(key.value.src);
+            newAudio.play();
+            return newAudio;
+        });
     }
 </script>
 
@@ -127,9 +147,7 @@
         on:click={() => playNote(CS3)}
     >
         {#if $notesVisible["key-2"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                C#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">C#</div>
         {/if}
     </button>
     <button
@@ -153,9 +171,7 @@
         on:click={() => playNote(DS3)}
     >
         {#if $notesVisible["key-4"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                D#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">D#</div>
         {/if}
     </button>
     <button
@@ -191,9 +207,7 @@
         on:click={() => playNote(FS3)}
     >
         {#if $notesVisible["key-7"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                F#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">F#</div>
         {/if}
     </button>
     <button
@@ -217,9 +231,7 @@
         on:click={() => playNote(GS3)}
     >
         {#if $notesVisible["key-9"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                G#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">G#</div>
         {/if}
     </button>
     <button
@@ -243,9 +255,7 @@
         on:click={() => playNote(AS3)}
     >
         {#if $notesVisible["key-11"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                A#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">A#</div>
         {/if}
     </button>
     <button
@@ -281,9 +291,7 @@
         on:click={() => playNote(CS4)}
     >
         {#if $notesVisible["key-14"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                C#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">C#</div>
         {/if}
     </button>
     <button
@@ -307,9 +315,7 @@
         on:click={() => playNote(DS4)}
     >
         {#if $notesVisible["key-16"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                D#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">D#</div>
         {/if}
     </button>
     <button
@@ -345,9 +351,7 @@
         on:click={() => playNote(FS4)}
     >
         {#if $notesVisible["key-19"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                F#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">F#</div>
         {/if}
     </button>
     <button
@@ -371,9 +375,7 @@
         on:click={() => playNote(GS4)}
     >
         {#if $notesVisible["key-21"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                G#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">G#</div>
         {/if}
     </button>
     <button
@@ -397,9 +399,7 @@
         on:click={() => playNote(AS4)}
     >
         {#if $notesVisible["key-23"] || $showKeys}
-            <div transition:fly={{ y: 10, duration: 300 }} class="note">
-                A#
-            </div>
+            <div transition:fly={{ y: 10, duration: 300 }} class="note">A#</div>
         {/if}
     </button>
     <button
