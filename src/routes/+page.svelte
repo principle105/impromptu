@@ -1,8 +1,80 @@
 <script lang="ts">
-    import Piano from "./Piano.svelte";
-    import PianoRoll from "./PianoRoll.svelte";
+    import * as Tone from "tone";
+    import Piano from "../lib/components/Piano.svelte";
+    import PianoRoll from "../lib/components/PianoRoll.svelte";
     import { selectedLine, selectedNote, selectedPrefab } from "./stores.js";
+    import createSampler from "./sampler.js";
     import { showKeys } from "./stores.js";
+    import {
+        selectQuarterNotesRandom,
+        createPossibleNotes,
+        noteChoices,
+        noteLength,
+        playbackArr,
+        type recording,
+        cntIndex,
+        fullNoteLength,
+    } from "./createPossibleNotes";
+    import ChoiceButton from "$lib/components/ChoiceButton.svelte";
+
+    let hoverNote: string;
+
+    export function playbackRecord() {
+        let sampler: Tone.Synth<Tone.SynthOptions>;
+        sampler = createSampler();
+        const now = Tone.now();
+        for (let i = 0; i < playbackArr.length; i++) {
+            if (playbackArr[i].name == "") {
+                break;
+            }
+            if (playbackArr[i].name == "Rest") {
+                //doesnt have to do anything because of how i set this up lmao
+            } else if (i == 0) {
+                // make sure player cannot choose rest as first note lol
+                sampler.triggerAttackRelease(
+                    playbackArr[i].name,
+                    playbackArr[i].duration,
+                    now,
+                );
+            } else {
+                console.log(i);
+                sampler.triggerAttackRelease(
+                    playbackArr[i].name,
+                    playbackArr[i].duration - playbackArr[i - 1].duration,
+                    now + playbackArr[i].duration,
+                );
+            }
+        }
+    }
+
+    export function saveNote(key: string, length: number) {
+        console.log("save");
+        let save: recording = {
+            name: key,
+            duration: length,
+        };
+        // qol to make playbacks easier
+        if (cntIndex[0] != 0) {
+            save.duration += playbackArr[cntIndex[0] - 1].duration;
+        }
+        playbackArr[cntIndex[0]] = save;
+        cntIndex[0]++;
+
+        let temp = $noteChoices;
+        // change to be based on chord progression
+        temp[0] = selectQuarterNotesRandom(createPossibleNotes("C3"));
+        $noteChoices = temp;
+
+        console.log(playbackArr);
+        noteLength;
+    }
+
+    export function playNote(key: string, length: number) {
+        console.log("play");
+        console.log(key);
+        const synthNotes = new Tone.PolySynth(Tone.Synth).toDestination();
+        synthNotes.triggerAttackRelease(key, length);
+    }
 
     let canPlay = false;
     $: {
@@ -48,9 +120,9 @@
                     let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
                     const newAudio = new Audio(src);
                     newAudio.play();
-                    await delay(element.length * 4000, cancelFlag);
+                    await delay(element.length * 1000, cancelFlag);
                 } else {
-                    await delay(element.length * 4000, cancelFlag);
+                    await delay(element.length * 1000, cancelFlag);
                 }
                 if (cancelFlag.isCancelled) {
                     throw new Error("Playback cancelled");
@@ -71,14 +143,73 @@
             <input type="checkbox" bind:checked={$showKeys} />
         </div>
         <div class="playback">
-            <button class={isPlaying ? "stop" : ""} disabled={!canPlay} on:click={playback}>{isPlaying ? "Stop" : "Play"}</button>
+            <button
+                class={isPlaying ? "stop" : ""}
+                disabled={!canPlay}
+                on:click={playback}
+                >{isPlaying ? "Stop" : "Play"}
+            </button>
         </div>
     </div>
+
+    <button
+        class="buttonthings"
+        on:click={() => saveNote($noteChoices[0][0], $noteLength[0])}
+        on:focus
+        on:mouseover={() => playNote($noteChoices[0][0], $noteLength[0])}
+    >
+        Choice 1
+    </button>
+    <button
+        class="buttonthings"
+        on:click={() => saveNote($noteChoices[0][1], $noteLength[1])}
+        on:focus
+        on:mouseover={() => playNote($noteChoices[0][1], $noteLength[1])}
+    >
+        Choice 2
+    </button>
+    <button
+        class="buttonthings"
+        on:click={() => saveNote($noteChoices[0][2], $noteLength[2])}
+        on:focus
+        on:mouseover={() => playNote($noteChoices[0][2], $noteLength[2])}
+    >
+        Choice 3
+    </button>
+    <button
+        class="buttonthings"
+        on:click={() => saveNote("Rest", fullNoteLength / 4)}
+    >
+        Add a rest
+    </button>
+    <button class="buttonthings" on:click={() => playbackRecord()}>
+        PLAYBACK
+    </button>
     <PianoRoll></PianoRoll>
-    <Piano></Piano>
+    <Piano {hoverNote}></Piano>
+
+    <div class="mt-8 flex flex-row items-center justify-center">
+        {#each $noteChoices[0] as note, i}
+            {#if note && $noteLength[i]}
+                <ChoiceButton
+                    click={() => saveNote(note, $noteLength[i])}
+                    mouseenter={() => {
+                        hoverNote = note;
+                        playNote(note, $noteLength[i]);
+                    }}
+                    mouseexit={() => {hoverNote = ""}}
+                    {note}
+                    length={$noteLength[i]}
+                ></ChoiceButton>
+            {/if}
+        {/each}
+    </div>
 </div>
 
 <style>
+    .buttonthings {
+        background-color: #008cba;
+    }
     .page {
         display: flex;
         flex-direction: column;
