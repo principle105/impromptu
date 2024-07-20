@@ -164,8 +164,10 @@
             hoverNote = melodyToNotes[i].name();
             rollRow = i;
 
-            if (melodyToNotes[i].name() === "") {
+            if (melodyToNotes[i].note === "") {
+                now += melodyToNotes[i].length;
                 await delay(delayTime);
+
                 continue;
             }
 
