@@ -1,7 +1,7 @@
 <script lang="ts">
     import Piano from "./Piano.svelte";
     import PianoRoll from "./PianoRoll.svelte";
-    import { selectedNote, selectedPrefab } from "./stores.js";
+    import { selectedLine, selectedNote, selectedPrefab } from "./stores.js";
     import { showKeys } from "./stores.js";
 
     let canPlay = false;
@@ -12,6 +12,23 @@
             canPlay = false;
         }
     }
+
+    function delay(ms : number) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    let playback = async () => {
+        for (let i = 0; i < $selectedPrefab.notes.length; i++) {
+            let element = $selectedPrefab.notes[i];
+            if (element.note) {
+                let src = `/piano-samples/${element.note}.wav`; // Ensure the correct file extension
+                const newAudio = new Audio(src);
+                newAudio.play();
+                selectedLine.update(() => i);
+                await delay(element.length * 1000);
+            }
+        }
+    };
 </script>
 
 <div class="page">
@@ -21,7 +38,7 @@
             <input type="checkbox" bind:checked={$showKeys} />
         </div>
         <div class="playback">
-            <button disabled={!canPlay}>Play</button>
+            <button disabled={!canPlay} on:click={playback}>Play</button>
         </div>
     </div>
     <PianoRoll></PianoRoll>
