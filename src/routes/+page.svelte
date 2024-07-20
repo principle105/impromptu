@@ -12,6 +12,9 @@
         exampleProgression,
         majorTriads,
     } from "./createPossibleNotes";
+    // import {
+    //     togglePiano
+    // } from "../lib/components/Piano.svelte";
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
     import { onMount } from "svelte";
     import { shuffle, sum, delay } from "$lib/util";
@@ -28,6 +31,9 @@
 
     // These are the choices that the user can pick from at given time
     let currentChoices: { name: string; length: number }[][] = [];
+
+    // Checks if custom is toggled or not
+    let customToggle = false;
 
     $: choiceIndex !== 0 ? (pianoDisabled = true) : (pianoDisabled = false);
 
@@ -123,7 +129,7 @@
             let delayTime = 1000 * playbackArr[i].length;
             hoverNote = playbackArr[i].name;
             rollRow = i;
-            
+
             if (playbackArr[i].name === "Rest") {
                 await delay(delayTime);
                 continue;
@@ -137,7 +143,11 @@
                 // console.log(backingTrack);
                 //hold for entire sequence
                 isBacking = true;
-                combineTracks = [backingTrack[0], backingTrack[1], backingTrack[2]];
+                combineTracks = [
+                    backingTrack[0],
+                    backingTrack[1],
+                    backingTrack[2],
+                ];
             }
             sampler.triggerAttackRelease(
                 playbackArr[i].name,
@@ -145,12 +155,8 @@
                 now,
             );
             backgroundSynth.volume.value = -20;
-            if(isBacking == true){
-              backgroundSynth.triggerAttackRelease(
-                combineTracks,
-                1,
-                now,
-            );
+            if (isBacking == true) {
+                backgroundSynth.triggerAttackRelease(combineTracks, 1, now);
             }
             // only first note of the sequence
 
@@ -185,7 +191,6 @@
 
     export function saveNote(key: string, length: number) {
         choiceIndex++;
-
         console.log("save");
         let save: recording = {
             name: key,
@@ -195,7 +200,23 @@
         // if (cntIndex[0] != 0) {
         //     save.duration += playbackArr[cntIndex[0] - 1].duration;
         // }
-        playbackArr.push({ name: key, length });
+        if (key != "Refresh" && key != "Custom") {
+            playbackArr.push({ name: key, length });
+        } else {
+            // if (key == "Custom") {
+            //     // custom
+            //     customToggle = !customToggle;
+            //     togglePiano();
+            //     cntIndex[0]--;
+            //     choiceIndex--;
+            //     console.log("custom");
+            // } else {
+                // refresh
+                cntIndex[0]--;
+                choiceIndex--;
+                console.log("refresh");
+            // }
+        }
         // playbackNotes.push({ name: key, length });
         cntIndex[0]++;
     }
@@ -337,6 +358,38 @@
                     ></ChoiceButton>
                 {/if}
             {/each}
+            <!-- Refresh Choices -->
+            <ChoiceButton
+                notes={[{ name: "Refresh", length: -1 }]}
+                mouseenter={() => {
+                    hoverNote = "";
+                }}
+                mouseexit={() => {
+                    hoverNote = "";
+                }}
+                click={() => {
+                    saveNote("Refresh", -1);
+                    hoverNote = "";
+                }}
+            >
+                Refresh Choices
+            </ChoiceButton>
+            <!-- Custom Note -->
+            <!-- <ChoiceButton
+                notes={[{ name: "Custom", length: -1 }]}
+                mouseenter={() => {
+                    hoverNote = "";
+                }}
+                mouseexit={() => {
+                    hoverNote = "";
+                }}
+                click={() => {
+                    saveNote("Custom", -1);
+                    hoverNote = "";
+                }}
+            >
+                Add a custom note
+            </ChoiceButton> -->
         </div>
     {/if}
 </div>

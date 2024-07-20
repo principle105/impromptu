@@ -146,6 +146,7 @@ const noteNames = [
   "B",
 ];
 
+
 // SCALES
 function generateMajorScale(key: string) {
   const majorIntervals = [2, 2, 1, 2, 2, 2, 1]; // Whole, Whole, Half, Whole, Whole, Whole, Half

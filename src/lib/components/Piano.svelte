@@ -13,7 +13,7 @@
 
     export let timePiece = 0;
     export let hoverNote: string;
-    export let disabled: boolean;
+    export let disabled: boolean = false;
     export let playNote: (key: string) => void;
 
     let seconds = 0;
@@ -80,6 +80,11 @@
         "key-24": false,
         "key-25": false,
     });
+
+    // export function togglePiano() {
+    //   // doesnt export properly in page.tsx in custom
+    //   disabled = !disabled;
+    // }
 
     function showNote(key: string) {
         notesVisible.update((nv) => ({ ...nv, [key]: true }));
