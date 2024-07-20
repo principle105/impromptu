@@ -1,4 +1,12 @@
 <script lang="ts">
+    // Icons
+    import IconBack from "~icons/material-symbols/arrow-back-ios";
+    import IconForward from "~icons/material-symbols/arrow-forward-ios";
+    import IconWholeNote from "~icons/mdi/music-note-whole";
+    import IconHalfNote from "~icons/mdi/music-note-half";
+    import IconQuarterNote from "~icons/mdi/music-note-quarter";
+    import IconEighthNote from "~icons/mdi/music-note-eighth";
+
     import * as Tone from "tone";
     import Piano from "$lib/components/Piano.svelte";
     import PianoRoll from "$lib/components/PianoRoll.svelte";
@@ -16,9 +24,6 @@
     } from "./createPossibleNotes";
     import { onMount } from "svelte";
     import { delay } from "$lib/util";
-
-    import IconBack from "~icons/material-symbols/arrow-back-ios";
-    import IconForward from "~icons/material-symbols/arrow-forward-ios";
 
     // The current measure and chord (noteChoices) both correspond to the same index
     let melody: Measure[] = [];
@@ -54,7 +59,7 @@
         { name: "Half Notes", rhythm: [1 / 2, 1 / 2] },
         { name: "Quarter Notes", rhythm: [1 / 4, 1 / 4, 1 / 4, 1 / 4] },
         {
-            name: "Eigth Notes",
+            name: "Eighth Notes",
             rhythm: [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
         },
     ];
@@ -340,10 +345,28 @@
                 >
                     {#each rhythmCatalog as { name, rhythm }}
                         <button
-                            on:click={() => {selectedRhythm = rhythm; onChangeRhythm()}}
-                            class="bg-slate-100 m-2"
+                            on:click={() => {
+                                selectedRhythm = rhythm;
+                                onChangeRhythm();
+                            }}
+                            class="flex justify-center items-center p-4 rounded-lg hover:border-2"
                         >
-                            {name}
+                            {#if name === "Whole Note"}
+                                <IconWholeNote class="text-gray-400 text-xl" />
+                            {:else if name === "Half Notes"}
+                                <IconHalfNote class="text-gray-400 text-xl" />
+                            {:else if name === "Quarter Notes"}
+                                <IconQuarterNote
+                                    class="text-gray-400 text-xl"
+                                />
+                            {:else if name === "Eighth Notes"}
+                                <IconEighthNote class="text-gray-400 text-xl" />
+                            {/if}
+                            <span
+                                class="bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 bg-clip-text text-transparent inline-block"
+                            >
+                                {name}
+                            </span>
                         </button>
                     {/each}
                 </div>
