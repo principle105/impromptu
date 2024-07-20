@@ -49,7 +49,10 @@
         { name: "Whole Note", rhythm: [1] },
         { name: "Half Notes", rhythm: [1 / 2, 1 / 2] },
         { name: "Quarter Notes", rhythm: [1 / 4, 1 / 4, 1 / 4, 1 / 4] },
-        { name: "Eigth Notes", rhythm: [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8] },
+        {
+            name: "Eigth Notes",
+            rhythm: [1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8, 1 / 8],
+        },
     ];
 
     let selectedRhythm: number[] = rhythmCatalog[2].rhythm;
@@ -292,7 +295,7 @@
                 </div>
                 <!-- CHOICE BUTTONS -->
 
-                <div class="mt-8 flex flex-row items-center justify-center">
+                <div class="mt-8 flex flex-row items-center justify-center gap">
                     {#each rhythmCatalog as { name, rhythm }}
                         <button
                             on:click={() => (selectedRhythm = rhythm)}
@@ -343,10 +346,12 @@
         margin: 0;
         padding: 0;
         height: 100%;
-        background-image: url(../background.jpg);
         background-repeat: no-repeat;
         background-size: cover;
         font-family: Arial, sans-serif;
+    }
+    .page {
+        background-color: #1e1e1e;
     }
 
     .home-screen {
@@ -406,6 +411,10 @@
         animation: fadeOutAnimation 1s ease forwards;
     }
 
+    .showKeys {
+        color: white;
+    }
+
     @keyframes fadeOutAnimation {
         0% {
             opacity: 1;
@@ -413,5 +422,8 @@
         100% {
             opacity: 0;
         }
+    }
+    .gap {
+        gap: 10px;
     }
 </style>

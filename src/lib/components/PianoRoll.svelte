@@ -76,10 +76,12 @@
                                             note.octave = "";
                                         }
                                     }}
-                                    class="flex items-center justify-center bg-blue-500 border border-blue-700 rounded-md relative z-10 group w-full h-full transition duration-300 ease-in-out transform shadow-lg {canEdit && "hover:bg-blue-500 hover:scale-105"}"
+                                    class="flex items-center justify-center bg-blue-500 border border-blue-700 rounded-md relative z-10 group w-full h-full transition duration-300 ease-in-out transform shadow-lg {canEdit &&
+                                        'hover:bg-blue-500 hover:scale-105'}"
                                 >
                                     <IconTrash
-                                        class="hidden text-white {canEdit && "group-hover:block"}"
+                                        class="hidden text-white {canEdit &&
+                                            'group-hover:block'}"
                                     ></IconTrash>
                                 </button>
                             {/if}

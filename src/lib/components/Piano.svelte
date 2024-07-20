@@ -582,7 +582,9 @@
     }
 
     .key:disabled {
-        background-color: gray;
+        background-color: #888888;
+        opacity: 0.98;
+        box-shadow: none;
     }
 
     .note {
@@ -600,10 +602,11 @@
     .white {
         width: 7.15%;
         height: 100%;
-        background-color: white;
+        background-color: #f0f8ff;
         border: solid 1px black;
         box-sizing: border-box;
         position: absolute;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
     }
 
     .white:active {
@@ -617,10 +620,16 @@
         border: solid 1px rgb(74, 74, 74);
         position: absolute;
         z-index: 1;
+        box-shadow:
+            0 0 25px rgba(255, 255, 255, 0.8),
+            0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
     .black:active {
-        background-color: rgb(18, 18, 18);
+        background-color: black;
+    }
+    .black:disabled {
+        background-color: #2e2e2e;
     }
 
     /* Positioning white keys */
