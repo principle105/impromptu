@@ -17,6 +17,9 @@
     import { onMount } from "svelte";
     import { delay } from "$lib/util";
 
+    import IconBack from "~icons/material-symbols/arrow-back-ios";
+    import IconForward from "~icons/material-symbols/arrow-forward-ios";
+
     // The current measure and chord (noteChoices) both correspond to the same index
     let melody: Measure[] = [];
     let noteChoices: Measure[] = [{ notes: [] }];
@@ -32,6 +35,7 @@
     function setKey(key: Note) {
         let chordProgression = exampleProgression;
         setNoteChoices(key.note, chordProgression);
+        melody[measureIndex] = { notes: generateEmptyMeasure(selectedRhythm) };
         keyInitialized = true;
     }
 
@@ -74,6 +78,11 @@
                 finish();
             }
         }
+    }
+
+    function deleteMeasureNote(i: number) {
+        melody[measureIndex].notes[i].note = "";
+        melody[measureIndex].notes[i].octave = "";
     }
 
     function nextMeasure() {
@@ -214,7 +223,7 @@
 
 {#if !keyInitialized}
     <div
-        class="h-[100vh] w-[100vw] bg-[#1e1e1e] flex flex-col items-center justify-center"
+        class="h-screen w-screen bg-[#1e1e1e] flex flex-col items-center justify-center"
     >
         <h1
             class="text-4xl font-bold bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 bg-clip-text text-transparent mb-20"
@@ -240,16 +249,22 @@
         </div>
     </div>
 {:else}
-    <div class="page">
+    <div class="bg-[#1e1e1e] min-h-screen">
         <!-- HEADER -->
-        <div class="header">
-            <div class="showKeys">
-                <span>Show Keys</span>
-                <input type="checkbox" bind:checked={$showKeys} />
+        <div class="flex justify-between p-4">
+            <div class="flex items-center text-white">
+                <span class="mr-2">Show Keys</span>
+                <input
+                    type="checkbox"
+                    bind:checked={$showKeys}
+                    class="form-checkbox"
+                />
             </div>
             <div class="playback">
                 <button
-                    class={isPlaying ? "stop" : ""}
+                    class="{isPlaying
+                        ? 'stop'
+                        : ''} bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black"
                     disabled={!finished}
                     on:click={() => {
                         if (isPlaying) {
@@ -262,13 +277,16 @@
                 </button>
             </div>
         </div>
-        <div class="grid grid-cols-6">
-            <div
-                class="left flex justify-center items-center flex-col col-span-4"
-            >
+        <div class="grid grid-cols-6 gap-4">
+            <div class="col-span-4 flex justify-center items-center flex-col">
                 <div class="flex">
                     <div>
-                        <button on:click={previousMeasure}> Back </button>
+                        <button
+                            on:click={previousMeasure}
+                            class="text-gray-400 p-4 hover:text-gray-300"
+                        >
+                            <IconBack />
+                        </button>
                     </div>
                     <div>
                         <!-- PIANO -->
@@ -276,14 +294,16 @@
                             <!-- ROLL -->
                             {#if !finished}
                                 <PianoRoll
-                                    notes={measure}
+                                    notes={melody[measureIndex].notes}
                                     bind:selectedIndex={inMeasureIndex}
+                                    deleteNote={deleteMeasureNote}
                                 ></PianoRoll>
                             {:else}
                                 <PianoRoll
                                     notes={melodyToNotes}
                                     selectedIndex={rollRow}
                                     canEdit={false}
+                                    deleteNote={deleteMeasureNote}
                                 ></PianoRoll>
                             {/if}
 
@@ -292,7 +312,6 @@
                                 {hoverNote}
                                 playNote={(key) => {
                                     playPianoNote(key.name());
-
                                     if (!finished)
                                         setMeasureNote(key.note, key.octave);
                                 }}
@@ -302,7 +321,6 @@
                             ></Piano>
                         </div>
                     </div>
-
                     <div>
                         <button
                             on:click={() => {
@@ -312,14 +330,16 @@
                                     finish();
                                 }
                             }}
+                            class="text-gray-400 p-4 hover:text-gray-300"
                         >
-                            Next Measure
+                            <IconForward />
                         </button>
                     </div>
                 </div>
-
                 <!-- RHYTHM BUTTONS -->
-                <div class="mt-8 flex flex-row items-center justify-center gap">
+                <div
+                    class="mt-8 flex flex-row items-center justify-center gap-2"
+                >
                     {#each rhythmCatalog as { name, rhythm }}
                         <button
                             on:click={() => (selectedRhythm = rhythm)}
@@ -330,66 +350,9 @@
                     {/each}
                 </div>
             </div>
-            <div class="right">
+            <div class="col-span-2">
                 <Graph bind:this={graphRef} notes={melodyToNotes} />
             </div>
         </div>
     </div>
 {/if}
-
-<!-- <html>
-    <body class="mainContainer">
-        <div class="home-screen">
-            <div class="title">Impromptu</div>
-            <div class="buttons">
-                <a href="/main">
-                    <button id="play">Start</button>
-                </a>
-                <a>
-                    <button id="learn"> Tutorial </button>
-                </a>
-            </div>
-        </div>
-    </body>
-</html> -->
-
-<style>
-    .page {
-        background-color: #1e1e1e;
-    }
-
-    button {
-        background-color: transparent;
-        color: #f8f8ff;
-        border: 2px solid #f8f8ff;
-        border-radius: 5px;
-        padding: 0.75vw 1.5vw;
-        margin: 1vw 0;
-        cursor: pointer;
-        font-size: 1.2vw;
-        transition:
-            background-color 0.3s,
-            color 0.3s;
-    }
-
-    button:hover {
-        background-color: #f8f8ff;
-        color: black;
-    }
-
-    .showKeys {
-        color: white;
-    }
-
-    @keyframes fadeOutAnimation {
-        0% {
-            opacity: 1;
-        }
-        100% {
-            opacity: 0;
-        }
-    }
-    .gap {
-        gap: 10px;
-    }
-</style>

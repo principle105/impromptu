@@ -6,6 +6,7 @@
     export let notes: Note[];
     export let selectedIndex: number;
     export let canEdit: Boolean = true;
+    export let deleteNote: (i: number) => void;
 
     $: if (!notes || !notes.length) {
         notes = [
@@ -72,8 +73,7 @@
                                 <button
                                     on:click={() => {
                                         if (canEdit) {
-                                            note.note = "";
-                                            note.octave = "";
+                                            deleteNote(i)
                                         }
                                     }}
                                     class="flex items-center justify-center bg-blue-500 border border-blue-700 rounded-md relative z-10 group w-full h-full transition duration-300 ease-in-out transform shadow-lg {canEdit &&

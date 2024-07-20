@@ -15,7 +15,6 @@
     }
 
     const noteFrequencyCatalog: noteFrequency = {
-        "": 0,
         C3: 130.81,
         "C#3": 138.59,
         D3: 146.83,
@@ -44,9 +43,18 @@
     };
 
     function notesToFrequencies(notes: Note[]): number[] {
-        return notes
-            .map((note) => noteFrequencyCatalog[note.name()] || 0)
-            .filter((frequency) => frequency > 0);
+        const frqs: number[] = [];
+
+        for (let i = 0; i < notes.length; i++) {
+            let frq = 0;
+            if (notes[i].note !== "") {
+                frq = noteFrequencyCatalog[notes[i].name()];
+            }
+
+            frqs.push(frq);
+        }
+
+        return frqs;
     }
 
     let frequencies: number[] = [];
