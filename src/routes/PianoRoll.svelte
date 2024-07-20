@@ -2,10 +2,12 @@
     import { onDestroy, onMount, tick } from "svelte";
     import { selectedNote, selectedLine, selectedPrefab } from "./stores";
 
-    let viewport;
+    let viewport; // Stores a reference to the viewport element
     let currPrefab: RhythmPrefab | null;
     $: currPrefab = $selectedPrefab;
 
+    //#region Rhythm Prefabs
+    //#region Interfaces
     interface Note {
         note: string;
         length: number;
@@ -16,6 +18,7 @@
         getNotesArray: () => Note[];
         getMinLength: () => number;
     }
+    //#endregion
 
     function createRhythmPrefab(notes: Note[]): RhythmPrefab {
         return {
@@ -35,6 +38,8 @@
         };
     }
 
+    /* PUT HARD-CODED PREFABS HERE */
+    // This is an example prefab
     let Prefab1: Note[] = [
         { note: "", length: 1 },
         { note: "", length: 1 },
@@ -50,6 +55,10 @@
         { note: "", length: 1 },
     ];
 
+    //#endregion
+
+    // Every time the note is updated from the keyboard, this method is called
+    // to set the corresponding grid note
     const unsubscribe = selectedNote.subscribe(async ({ note: newNote }) => {
         if ($selectedPrefab) {
             console.log("Setting new note...");
@@ -63,6 +72,7 @@
         }
     });
 
+    // To handle note deletion (when grid note is dbl-clicked)
     function clearNote(index: number) {
         selectedPrefab.update((prefab) => {
             if (prefab) {
@@ -75,8 +85,10 @@
     }
 
     onMount(() => {
+        // TODO: Handle prefab switching with a dropdown or some selection method
         selectedPrefab.set(createRhythmPrefab(Prefab1));
 
+        // This scrolls the viewport to the selected line whenever it changes
         let unsubLine = selectedLine.subscribe(async () => {
             await tick();
 
@@ -90,6 +102,8 @@
                 });
             }
         });
+
+        // Clean up
         onDestroy(() => {
             unsubscribe();
             unsubLine();
