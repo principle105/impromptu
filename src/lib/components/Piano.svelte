@@ -2,13 +2,16 @@
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
     import { showKeys } from "../stores";
-    import createSampler from "../../routes/sampler.js";
+    import createSampler from "../../routes/main/sampler.js";
     import * as Tone from "tone";
     import {
         createPossibleNotes,
         Note,
         allNotes,
-    } from "../../routes/createPossibleNotes";
+        exampleProgression,
+        generateIntervals,
+    } from "../../routes/main/createPossibleNotes";
+    import { shuffle } from "$lib/util";
 
     export let timePiece = 0;
     export let hoverNote: string;

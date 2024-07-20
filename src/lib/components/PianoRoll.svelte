@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
-    import { Note } from "../../routes/createPossibleNotes";
+    import { Note } from "../../routes/main/createPossibleNotes";
 
     export let notes: Note[];
     export let selectedIndex: number;

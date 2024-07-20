@@ -1,9 +1,9 @@
 <script lang="ts">
     import * as Tone from "tone";
-    import Piano from "../lib/components/Piano.svelte";
-    import PianoRoll from "../lib/components/PianoRoll.svelte";
-    import createSampler from "./main/sampler.js";
-    import Graph from "../lib/components/Graph.svelte";
+    import Piano from "$lib/components/Piano.svelte";
+    import PianoRoll from "$lib/components/PianoRoll.svelte";
+    import createSampler from "./sampler.js";
+    import Graph from "$lib/components/Graph.svelte";
     import { showKeys } from "$lib/stores.js";
     import {
         type recording,
@@ -16,7 +16,7 @@
         Measure,
         generateEmptyMeasure,
         allNotes,
-    } from "./main/createPossibleNotes";
+    } from "./createPossibleNotes";
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
     import { onMount } from "svelte";
     import { shuffle, sum, delay } from "$lib/util";
@@ -85,6 +85,36 @@
     function setMeasureNote(note: string, octave: string) {
         measure[inMeasureIndex].note = note;
         measure[inMeasureIndex].octave = octave;
+
+        if (inMeasureIndex + 1 < measure.length) inMeasureIndex++;
+    }
+
+    function nextMeasure() {
+        melody[measureIndex] = { notes: [] };
+        melody[measureIndex].notes = measure;
+        measure = generateEmptyMeasure(selectedRhythm);
+        measureIndex++;
+        inMeasureIndex = 0;
+    }
+
+    let finished = false;
+    
+    function measureArrayToNoteArray(melody: Measure[]) {
+        const notes: Note[] = [];
+
+        for (let i = 0; i < melody.length; i++) {
+            for (let j = 0; j < melody[i].notes.length; j++) {
+                notes.push(melody[i].notes[j]);
+            }
+        }
+
+        return notes;
+    }
+
+    $: melodyToNotes = measureArrayToNoteArray(melody);
+
+    function finish() {
+        finished = true;
     }
 
     /* ------------------ */
@@ -429,15 +459,19 @@
                 </button>
             </div>
         </div>
-        <div class="main">
-            <div class="left">
-                <div class="container">
+        <div class="grid grid-cols-6">
+            <div
+                class="left flex justify-center items-center flex-col col-span-4"
+            >
+                <div class="bg-gray h-fit w-fit">
                     <!-- PIANO ROLL -->
-                    {#if !playbackActive}
-                        <PianoRoll notes={measure} bind:selectedIndex={inMeasureIndex}
+                    {#if !finished}
+                        <PianoRoll
+                            notes={measure}
+                            bind:selectedIndex={inMeasureIndex}
                         ></PianoRoll>
                     {:else}
-                        <PianoRoll notes={playbackArr} selectedIndex={rollRow}
+                        <PianoRoll notes={melodyToNotes} selectedIndex={rollRow}
                         ></PianoRoll>
                     {/if}
 
@@ -454,82 +488,30 @@
                     ></Piano>
                 </div>
                 <!-- CHOICE BUTTONS -->
-                {#if measureIndex < noteChoices.length}
-                    <div class="mt-8 flex flex-row items-center justify-center">
-                        <!-- Rest -->
-                        <ChoiceButton
-                            notes={[{ name: "Rest", length: 1 }]}
-                            mouseenter={() => {
-                                hoverNote = "";
-                            }}
-                            mouseexit={() => {
-                                hoverNote = "";
-                            }}
-                            click={() => {
-                                saveNote("Rest", 1);
-                                hoverNote = "";
-                            }}
+
+                <div class="mt-8 flex flex-row items-center justify-center">
+                    {#each rhythmCatalog as { name, rhythm }}
+                        <button
+                            on:click={() => (selectedRhythm = rhythm)}
+                            class="bg-slate-100 m-2"
                         >
-                            Add a rest
-                        </ChoiceButton>
-                        {#each rhythmCatalog as { name, rhythm }}
-                            <button
-                                on:click={() => (selectedRhythm = rhythm)}
-                                class="bg-slate-100 m-2"
-                            >
-                                {name}
+                            {name}
+                        </button>
+                    {/each}
+                    {#if measureIndex < noteChoices.length - 1}
+                        <div>
+                            <button on:click={nextMeasure}>
+                                Next Measure
                             </button>
-                        {/each}
-                        <!-- {#each currentChoices as notes, i}
-                        {#if notes}
-                            <ChoiceButton
-                                {notes}
-                                click={() => {
-                                    saveNotes(notes);
-                                    rollIndex = 0;
-                                }}
-                                mouseenter={() => {
-                                    playNotes(notes);
-                                    rollIndex = i;
-                                }}
-                                mouseexit={() => {}}
-                            ></ChoiceButton>
-                        {/if}
-                    {/each} -->
-                        <!-- Refresh Choices -->
-                        <!-- <ChoiceButton
-                        notes={[{ name: "Refresh", length: -1 }]}
-                        mouseenter={() => {
-                            hoverNote = "";
-                        }}
-                        mouseexit={() => {
-                            hoverNote = "";
-                        }}
-                        click={() => {
-                            saveNote("Refresh", -1);
-                            hoverNote = "";
-                        }}
-                    >
-                        Refresh Choices
-                    </ChoiceButton> -->
-                        <!-- Custom Note -->
-                        <!-- <ChoiceButton
-                notes={[{ name: "Custom", length: -1 }]}
-                mouseenter={() => {
-                    hoverNote = "";
-                }}
-                mouseexit={() => {
-                    hoverNote = "";
-                }}
-                click={() => {
-                    saveNote("Custom", -1);
-                    hoverNote = "";
-                }}
-            >
-                Add a custom note
-            </ChoiceButton> -->
-                    </div>
-                {/if}
+                        </div>
+                    {:else}
+                        <div>
+                            <button on:click={finish}>
+                                Finish
+                            </button>
+                        </div>
+                    {/if}
+                </div>
             </div>
             <div class="right">
                 <Graph bind:this={graphRef} {playbackArr} />
