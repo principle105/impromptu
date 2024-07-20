@@ -22,3 +22,7 @@ export const getFraction = (decimal: number) => {
   for(denominator = 1; (decimal * denominator) % 1 !== 0; denominator++);
   return {numerator: decimal * denominator, denominator: denominator};
 }
+
+export function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

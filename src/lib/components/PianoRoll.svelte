@@ -1,8 +1,37 @@
 <script lang="ts">
+    import { onMount, tick } from "svelte";
+
     export let notes: { name: string; length: number }[];
     export let selectedIndex: number;
 
     let viewport; // Stores a reference to the viewport element
+
+    $: {
+        if (typeof window !== "undefined") {
+            scroll(selectedIndex);
+        }
+    }
+
+    async function scroll(index: number) {
+        await tick();
+
+        if (typeof document !== "undefined") {
+            const selectedLineElement = document.getElementById(
+                `line-${index}`,
+            );
+            if (selectedLineElement) {
+                selectedLineElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+            }
+        }
+    }
+
+    onMount(() => {
+        // Initial scroll on mount
+        scroll(selectedIndex);
+    });
 </script>
 
 {#if notes}

@@ -7,14 +7,13 @@
     import {
         type recording,
         cntIndex,
-        fullNoteLength,
         previewSynthCreated,
         generateIntervals,
         exampleProgression,
     } from "./createPossibleNotes";
     import ChoiceButton from "$lib/components/ChoiceButton.svelte";
     import { onMount } from "svelte";
-    import { shuffle, sum } from "$lib/util";
+    import { shuffle, sum, delay } from "$lib/util";
 
     /* FOR PREVIEWING AND SELECTION */
     let hoverNote: string;
@@ -114,16 +113,24 @@
 
     // This plays finished melody
     // TODO: Harmonize the melody with chords
-    export function playbackRecord() {
+    async function playbackRecord() {
         let sampler: Tone.Synth<Tone.SynthOptions>;
         sampler = createSampler();
         let now = Tone.now();
         for (let i = 0; i < playbackArr.length; i++) {
-            sampler.triggerAttackRelease(playbackArr[i].name, playbackArr[i].length, now)
+            sampler.triggerAttackRelease(
+                playbackArr[i].name,
+                playbackArr[i].length,
+                now,
+            );
+
+            let delayTime = 1000 * playbackArr[i].length;
+            hoverNote = playbackArr[i].name;
+            rollRow = i;
+
+            await delay(delayTime);
 
             now += playbackArr[i].length;
-
-            rollRow = i;
 
             // if (playbackArr[i].name == "") {
             //     break;
@@ -162,7 +169,7 @@
         // if (cntIndex[0] != 0) {
         //     save.duration += playbackArr[cntIndex[0] - 1].duration;
         // }
-        playbackArr.push({name: key, length});
+        playbackArr.push({ name: key, length });
         // playbackNotes.push({ name: key, length });
         cntIndex[0]++;
     }
@@ -184,20 +191,44 @@
             loadSampler();
             previewSynthCreated[0] = true;
         }
-        synthNotes.triggerAttackRelease(key, length, delay);
+        synthNotes.triggerAttackRelease(key, length);
     }
 
-    async function playNotes(notes: { name: string; length: number }[]) {
-        let delay = Tone.now();
-        rollRow = 0;
-        notes.forEach((note, i) => {
-            hoverNote = "";
-            hoverNote = note.name;
+    let currentlyPlaying = null;
 
+    async function playNotes(notes: { name: string; length: number }[]) {
+        // Cancel the currently playing notes if any
+        if (currentlyPlaying) {
+            currentlyPlaying.cancel();
+        }
+
+        // Create a new cancel token for the current run
+        const cancelToken = { canceled: false };
+        currentlyPlaying = {
+            cancel() {
+                cancelToken.canceled = true;
+            },
+        };
+
+        rollRow = 0;
+
+        for (let i = 0; i < notes.length; i++) {
+            if (cancelToken.canceled) {
+                return;
+            }
+
+            let delayTime = 1000 * notes[i].length;
+            hoverNote = notes[i].name;
             rollRow = i;
-            playNote(note.name, note.length, delay);
-            delay += note.length;
-        });
+
+            playNote(notes[i].name, notes[i].length, delayTime);
+
+            await delay(delayTime);
+        }
+
+        if (!cancelToken.canceled) {
+            hoverNote = "";
+        }
     }
 
     // To check if playback is allowed (if there are notes to be played)
