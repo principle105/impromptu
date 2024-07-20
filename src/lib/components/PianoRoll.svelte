@@ -4,6 +4,15 @@
     export let notes: { name: string; length: number }[];
     export let selectedIndex: number;
 
+    $: if (!notes || !notes.length) {
+        notes = [
+            { name: "", length: 1 / 4 },
+            { name: "", length: 1 / 4 },
+            { name: "", length: 1 / 4 },
+            { name: "", length: 1 / 4 },
+        ];
+    }
+
     let viewport; // Stores a reference to the viewport element
 
     $: {
