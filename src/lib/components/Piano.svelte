@@ -1,7 +1,7 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
-    import { showKeys } from "../../routes/stores";
+    import { showKeys } from "../stores";
     import createSampler from "../../routes/sampler.js";
     import * as Tone from "tone";
     import {

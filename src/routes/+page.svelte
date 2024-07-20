@@ -2,9 +2,9 @@
     import * as Tone from "tone";
     import Piano from "../lib/components/Piano.svelte";
     import PianoRoll from "../lib/components/PianoRoll.svelte";
-    import { selectedLine, selectedNote, selectedPrefab } from "./stores.js";
+    import { selectedLine, selectedNote, selectedPrefab } from "../lib/stores.js";
     import createSampler from "./sampler.js";
-    import { showKeys } from "./stores.js";
+    import { showKeys } from "../lib/stores.js";
     import {
         selectQuarterNotesRandom,
         createPossibleNotes,
@@ -185,7 +185,7 @@
     <button class="buttonthings" on:click={() => playbackRecord()}>
         PLAYBACK
     </button>
-    <PianoRoll></PianoRoll>
+    <PianoRoll notes={$noteChoices} lengths={$noteLength} {hoverNote}></PianoRoll>
     <Piano {hoverNote}></Piano>
 
     <div class="mt-8 flex flex-row items-center justify-center">
@@ -197,7 +197,9 @@
                         hoverNote = note;
                         playNote(note, $noteLength[i]);
                     }}
-                    mouseexit={() => {hoverNote = ""}}
+                    mouseexit={() => {
+                        hoverNote = "";
+                    }}
                     {note}
                     length={$noteLength[i]}
                 ></ChoiceButton>
