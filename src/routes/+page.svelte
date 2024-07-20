@@ -121,9 +121,12 @@
         };
     });
 
+    let playbackActive = false;
+
     // This plays finished melody
     // Harmonized the melody with chords
     async function playbackRecord() {
+        playbackActive = true;
         let sampler: Tone.Synth<Tone.SynthOptions>;
         sampler = createSampler();
         let backgroundSynth: Tone.Synth<Tone.SynthOptions>;
@@ -191,6 +194,9 @@
             //     );
             // }
         }
+
+        hoverNote = "";
+        playbackActive = false;
     }
 
     const noteFrequencies = {
@@ -283,17 +289,17 @@
         synthNotes.triggerAttackRelease(key, length);
     }
 
-    let currentlyPlaying = null;
+    let currentActiveNote = null;
 
     async function playNotes(notes: { name: string; length: number }[]) {
         // Cancel the currently playing notes if any
-        if (currentlyPlaying) {
-            currentlyPlaying.cancel();
+        if (currentActiveNote) {
+            currentActiveNote.cancel();
         }
 
         // Create a new cancel token for the current run
         const cancelToken = { canceled: false };
-        currentlyPlaying = {
+        currentActiveNote = {
             cancel() {
                 cancelToken.canceled = true;
             },
@@ -354,12 +360,12 @@
         <div class="left">
             <div class="container">
                 <!-- PIANO ROLL -->
-                {#if choiceIndex < noteChoices.length}
+                {#if !playbackActive}
                     <PianoRoll
                         notes={currentChoices[rollIndex]}
                         selectedIndex={rollRow}
                     ></PianoRoll>
-                {:else if playbackArr}
+                {:else}
                     <PianoRoll notes={playbackArr} selectedIndex={rollRow}
                     ></PianoRoll>
                 {/if}
@@ -557,21 +563,5 @@
         background-color: rgb(97, 97, 97);
         border: 2px rgb(126, 124, 124) solid;
         color: rgb(213, 213, 213);
-    }
-    .container {
-        display: flex;
-        flex-direction: column; /* Stack items vertically */
-        align-items: stretch; /* Ensure items take up full width */
-    }
-
-    .container > :global(*) {
-        flex: none; /* Ensure the items do not grow or shrink */
-        width: 100%; /* Ensure both elements take up full width */
-    }
-
-    .container > :global(PianoRoll),
-    .container > :global(Piano) {
-        margin: 0;
-        padding: 0;
     }
 </style>

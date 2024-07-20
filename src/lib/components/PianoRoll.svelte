@@ -69,7 +69,7 @@
 <style>
     .viewport {
         background-color: black;
-        margin-left: 42.9px;
+        /* margin-left: 42.9px; */
         width: 642.9px;
         height: fit-content;
         height: 300px;
