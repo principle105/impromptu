@@ -115,7 +115,7 @@
             >
                 <div class="note" style="border-left: none;">
                     {#if note.note === "C3"}
-                        <div class="selected"></div>
+                        <div class="selected" on:dblclick={() => clearNote(i)}></div>
                     {/if}
                 </div>
                 {#each ["CS3", "D3", "DS3", "E3", "F3", "FS3", "G3", "GS3", "A3", "AS3", "B3", "C4", "CS4", "D4", "DS4", "E4", "F4", "FS4", "G4", "GS4", "A4", "AS4", "B4"] as noteType}
@@ -167,5 +167,9 @@
         background-color: rgb(0, 153, 255);
         border: solid rgb(72, 182, 255);
         border-radius: 6px;
+        z-index: 1;
+    }
+    .note .selected:hover {
+        background-color: rgb(28, 164, 255);
     }
 </style>

@@ -428,7 +428,7 @@
         justify-content: center;
         align-items: end;
         color: gray;
-        font-size: 20px;
+        font-size: 16px;
         font-family: sans-serif;
     }
 
