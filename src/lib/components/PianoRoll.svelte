@@ -1,11 +1,11 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
-    import { Note } from "../../routes/main/createPossibleNotes";
+    import { Note } from "../utils/notes";
     import IconTrash from "~icons/solar/trash-bin-minimalistic-line-duotone";
 
     export let notes: Note[];
     export let selectedIndex: number;
-    export let canEdit: Boolean = true;
+    export let canEdit: boolean = true;
     export let deleteNote: (i: number) => void;
 
     $: if (!notes || !notes.length) {
