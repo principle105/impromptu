@@ -55,6 +55,7 @@
         {#each notes as note, i}
             {#if note}
                 <button
+                    disabled={!canEdit}
                     on:click={() => (selectedIndex = i)}
                     id={`line-${i}`}
                     class="flex-shrink-0 flex w-full"
@@ -71,6 +72,7 @@
                         >
                             {#if note.name() === noteType}
                                 <button
+                                    disabled={!canEdit}
                                     on:click={() => {
                                         if (canEdit) {
                                             deleteNote(i);
