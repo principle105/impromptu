@@ -104,19 +104,19 @@
 
     const nextMeasure = () => {
         if (finished) return;
+        setTimeout(() => {
 
         measureIndex++;
 
-        setTimeout(() => {
             synth.triggerRelease();
+            
+            if (!melody[measureIndex]) {
+                melody[measureIndex] = { notes: [] };
+                melody[measureIndex].notes = generateEmptyMeasure(selectedRhythm);
+            }
+            
+            inMeasureIndex = 0;
         }, 100);
-
-        if (!melody[measureIndex]) {
-            melody[measureIndex] = { notes: [] };
-            melody[measureIndex].notes = generateEmptyMeasure(selectedRhythm);
-        }
-
-        inMeasureIndex = 0;
     };
 
     const previousMeasure = () => {
