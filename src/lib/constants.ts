@@ -93,8 +93,14 @@ export const DOMINANT_CADENCE: Chord[] = ["V", "I"];
 
 // PROGRESSION SNIPPETS
 export const POSSIBLE_PROGRESSIONS: Chord[][] = [
-    ["I", "IV", "I", "I", "IV", "IV", "I", "V", "IV", "I", "V"],
-    ["I", "IV", "I", "IV", "I", "V", "IV", "V", "I"],
-    ["I", "IV", "I", "IV", "I", "V", "I"],
-    ["I", "IV", "I", "V", "IV", "I", "V", "I"],
+    ["I", "IV", "I", "I", "IV", "IV", "I", "I", "V", "IV", "I"],
+    ["I", "IV", "I", "I", "IV", "IV", "I", "I", "V", "IV"],
+    ["I", "IV", "IV", "I", "IV", "IV", "I", "I", "V", "V"],
+    ["I", "I", "I", "I", "IV", "IV", "I", "I", "V", "IV"],
+    ["I", "IV", "I", "V", "IV", "IV", "I", "I", "V", "IV"],
+    ["I", "I", "IV", "IV", "I", "I", "I", "IV", "V", "IV"],
+    ["I", "IV", "I", "I", "IV", "IV", "I", "V", "I", "IV"],
+    ["I", "IV", "I", "I", "IV", "I", "I", "IV", "V", "IV"],
+    ["I", "IV", "I", "IV", "I", "IV", "I", "I", "V", "IV"],
+    ["I", "I", "IV", "I", "IV", "IV", "I", "I", "V", "IV"],
 ];
