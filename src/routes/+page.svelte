@@ -322,12 +322,11 @@
                 </div>
                 <div>
                     <button
-                        class="bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black
+                        disabled={isPlaying}
+                        class="bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black disabled:text-gray-500 disabled:border-gray-500 disabled:bg-gray-300 disabled:pointer-events-none
                         {!isPlaying && finished
                             ? 'border-green-400 text-green-300 hover:bg-green-100 hover:text-black'
-                            : finished
-                              ? 'border-red-400 text-red-300 hover:bg-red-100 hover:text-black'
-                              : ''}"
+                            : ''}"
                         on:click={() => {
                             if (!finished) {
                                 finished = true;
@@ -355,6 +354,7 @@
                 <div class="flex">
                     <div>
                         <button
+                        disabled={finished}
                             on:click={previousMeasure}
                             class="text-gray-400 p-4 {!finished &&
                                 'hover:text-gray-300'}"
