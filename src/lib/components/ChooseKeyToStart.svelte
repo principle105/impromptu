@@ -1,6 +1,6 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import type { Note } from "$lib/utils/notes";
+    import type { Note } from "$lib/notes";
 
     import Piano from "./Piano.svelte";
 

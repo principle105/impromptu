@@ -12,14 +12,15 @@
         Note,
         Measure,
         generateEmptyMeasure,
-    } from "$lib/utils/notes";
+    } from "$lib/notes";
     import {
         DOMINANT_CADENCE,
         POSSIBLE_PROGRESSIONS,
         MAJOR_TRIADS_MAP,
         ALL_NOTES,
-    } from "$lib/utils/constants";
-    import { delay } from "$lib/utils/misc";
+    } from "$lib/constants";
+    import { delay } from "$lib/utils";
+    import type { Chord, NoteName } from "$lib/types";
 
     // Icons
     import IconBack from "~icons/material-symbols/arrow-back-ios";
@@ -29,7 +30,6 @@
     import IconQuarterNote from "~icons/mdi/music-note-quarter";
     import IconEighthNote from "~icons/mdi/music-note-eighth";
     import ChooseKeyToStart from "$lib/components/ChooseKeyToStart.svelte";
-    import type { Chord, NoteName } from "$lib/utils/types";
 
     // The current measure and chord (noteChoices) both correspond to the same index
     let melody: Measure[] = [];

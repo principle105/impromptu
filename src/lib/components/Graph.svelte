@@ -2,8 +2,8 @@
     import { onMount } from "svelte";
     import { Chart, registerables } from "chart.js";
 
-    import { NOTE_FREQUENCY_MAP } from "$lib/utils/constants";
-    import type { Note } from "$lib/utils/notes";
+    import { NOTE_FREQUENCY_MAP } from "$lib/constants";
+    import type { Note } from "$lib/notes";
 
     Chart.register(...registerables);
 

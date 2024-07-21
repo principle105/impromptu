@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount, tick } from "svelte";
-    import { Note } from "../utils/notes";
+    import { Note } from "../notes";
     import IconTrash from "~icons/solar/trash-bin-minimalistic-line-duotone";
 
     export let notes: Note[];

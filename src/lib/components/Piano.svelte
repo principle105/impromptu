@@ -2,8 +2,8 @@
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
 
-    import { Note } from "../utils/notes";
-    import { ALL_NOTES } from "$lib/utils/constants";
+    import { Note } from "$lib/notes";
+    import { ALL_NOTES } from "$lib/constants";
 
     export let hoverNote: string;
     export let playNote: (key: Note) => void;
