@@ -181,32 +181,35 @@
 
     let recordedPrev = false;
 
-    const stopPlayback = () => {
-        isPlaying = false;
-    };
-
     const playbackRecord = async () => {
         isPlaying = true;
 
         let now = Tone.now();
 
         sampler.connect(dest);
+
         backgroundSynth.connect(dest);
+
         recorder.ondataavailable = (event) => {
             audio.push(event.data);
         };
+
         recorder.onstop = () => {
             const audioBlob = new Blob(audio, {
                 type: "audio/ogg; codecs=opus",
             });
+
             const downloadUrl = URL.createObjectURL(audioBlob);
             const downloadAnchor = document.createElement("a");
+
             downloadAnchor.style.display = "none";
             downloadAnchor.href = downloadUrl;
             downloadAnchor.download = "myImpromptuPiece.ogg";
+
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             document.body.removeChild(downloadAnchor);
+
             URL.revokeObjectURL(downloadUrl);
         };
         if (recordedPrev == false) {
@@ -275,11 +278,37 @@
     };
 
     let showKeys = false;
+
+    let showHomePage = true;
 </script>
 
 <svelte:window on:mouseup={onRelease} />
 
-{#if !isFirstKeyChosen}
+{#if showHomePage}
+    <main
+        style=" background-image: url(../background.jpg); background-repeat: no-repeat; background-size: cover;"
+    >
+        <section
+            class="text-white h-screen flex flex-col items-center mt-0 text-center"
+        >
+            <div
+                class="cursor-pointer mt-[20vw] text-8xl mb-7 font-bold text-[#e6e6fa] hover:scale-110 transition-transform"
+            >
+                Impromptu
+            </div>
+            <div>
+                <button
+                    class="bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-8 py-2.5 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black"
+                    on:click={() => {
+                        showHomePage = false;
+                    }}
+                >
+                    Start
+                </button>
+            </div>
+        </section>
+    </main>
+{:else if !isFirstKeyChosen}
     <ChooseKeyToStart
         on:initialNoteChosen={(e) => {
             synth.triggerAttack(e.detail.name());
@@ -292,79 +321,79 @@
         }}
     />
 {:else}
-    <div class="bg-[#1e1e1e] min-h-screen">
-        <!-- HEADER -->
-        <div>
-            <div class="ml-auto flex gap-8">
-                <div class="flex items-center text-white gap-2">
-                    <span
-                        class="bg-gradient-to-r from-gray-300 via-gray-400 to-gray-300 bg-clip-text text-transparent inline-block"
-                        >Show Keys</span
-                    >
-                    <label class="inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            class="sr-only peer"
-                            bind:checked={showKeys}
-                        />
-                        <div
-                            class="relative w-12 h-6 bg-gray-300 rounded-full
+    <div class="min-h-screen max-w-screen-xl mx-auto flex flex-col">
+        <header class="flex gap-8 justify-end w-full py-8">
+            <div class="flex items-center text-white gap-2">
+                <span
+                    class="bg-gradient-to-r from-zinc-300 via-zinc-400 to-zinc-300 bg-clip-text text-transparent inline-block"
+                >
+                    Show Keys
+                </span>
+                <label class="inline-flex items-center cursor-pointer">
+                    <input
+                        type="checkbox"
+                        class="sr-only peer"
+                        bind:checked={showKeys}
+                    />
+                    <div
+                        class="relative w-12 h-6 bg-zinc-600 rounded-full
                                 peer peer-checked:after:translate-x-full
                                 rtl:peer-checked:after:-translate-x-full
                                 peer-checked:after:border-white after:content-['']
                                 after:absolute after:top-[2px] after:start-[2px]
-                                after:bg-white after:border-gray-300 after:border
+                                after:bg-white after:border-zinc-600 after:border
                                 after:rounded-full after:h-5
                                 after:w-5 after:transition-all
-                                peer-checked:bg-gray-500"
-                        ></div>
-                    </label>
-                </div>
-                <div>
-                    <button
-                        disabled={isPlaying}
-                        class="bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black disabled:text-gray-500 disabled:border-gray-500 disabled:bg-gray-300 disabled:pointer-events-none
-                        {!isPlaying && finished
-                            ? 'border-green-400 text-green-300 hover:bg-green-100 hover:text-black'
-                            : ''}"
-                        on:click={() => {
-                            if (!finished) {
-                                finished = true;
-                            } else {
-                                playbackRecord();
-                                setTimeout(
-                                    () => {
-                                        recorder.stop();
-                                        sampler.disconnect(dest);
-                                        backgroundSynth.disconnect(dest);
-                                    },
-                                    1000 * (chordProgression.length + 2) + 200,
-                                );
-                            }
-                        }}
-                    >
-                        {!finished ? "Finish" : "Play"}
-                    </button>
-                </div>
+                                peer-checked:bg-zinc-700"
+                    ></div>
+                </label>
             </div>
-        </div>
+            <div>
+                <button
+                    class="disabled:cursor-not-allowed bg-transparent text-[#f8f8ff] border-2 border-[#f8f8ff] rounded px-4 py-2 cursor-pointer text-lg transition-colors hover:bg-[#f8f8ff] hover:text-black
+                        {!isPlaying && finished
+                        ? 'border-green-400 text-green-300 hover:bg-green-100 hover:text-black'
+                        : finished
+                          ? 'border-red-400 text-red-300 hover:bg-red-100 hover:text-black'
+                          : ''}"
+                    disabled={isPlaying}
+                    on:click={() => {
+                        if (!finished) {
+                            finished = true;
+                        } else {
+                            playbackRecord();
+                            setTimeout(
+                                () => {
+                                    recorder.stop();
+                                    sampler.disconnect(dest);
+                                    backgroundSynth.disconnect(dest);
+                                },
+                                1000 * (chordProgression.length + 2) + 200,
+                            );
+                        }
+                    }}
+                >
+                    {!finished ? "Finish" : "Play"}
+                </button>
+            </div>
+        </header>
 
-        <div class="grid grid-cols-7 gap-4">
-            <div class="col-span-4 flex justify-center items-center flex-col">
+        <main class="flex gap-8 items-center h-full grow">
+            <div class="grow flex justify-center items-center flex-col pb-10">
                 <div class="flex">
                     <div>
                         <button
-                        disabled={finished}
+                            disabled={finished}
                             on:click={previousMeasure}
-                            class="text-gray-400 p-4 {!finished &&
-                                'hover:text-gray-300'}"
+                            class="text-zinc-400 p-4 {!finished &&
+                                'hover:text-zinc-300'}"
                         >
                             <IconBack />
                         </button>
                     </div>
                     <div>
                         <!-- PIANO -->
-                        <div class="bg-gray h-fit w-fit">
+                        <div class="bg-zinc h-fit w-fit">
                             <!-- ROLL -->
                             {#if !finished}
                                 <PianoRoll
@@ -406,8 +435,8 @@
                                     nextMeasure();
                                 }
                             }}
-                            class="text-gray-400 p-4 {!finished &&
-                                'hover:text-gray-300'}"
+                            class="text-zinc-400 p-4 {!finished &&
+                                'hover:text-zinc-300'}"
                         >
                             <IconForward />
                         </button>
@@ -423,22 +452,22 @@
                                 selectedRhythm = rhythm;
                                 onChangeRhythm();
                             }}
-                            class="flex justify-center items-center p-4 rounded-lg hover:border-2 {finished &&
+                            class="flex justify-center items-center p-4 rounded-lg border-2 hover:border-white border-transparent {finished &&
                                 'invisible'}"
                         >
                             {#if name === "Whole Note"}
-                                <IconWholeNote class="text-gray-400 text-xl" />
+                                <IconWholeNote class="text-zinc-400 text-xl" />
                             {:else if name === "Half Notes"}
-                                <IconHalfNote class="text-gray-400 text-xl" />
+                                <IconHalfNote class="text-zinc-400 text-xl" />
                             {:else if name === "Quarter Notes"}
                                 <IconQuarterNote
-                                    class="text-gray-400 text-xl"
+                                    class="text-zinc-400 text-xl"
                                 />
                             {:else if name === "Eighth Notes"}
-                                <IconEighthNote class="text-gray-400 text-xl" />
+                                <IconEighthNote class="text-zinc-400 text-xl" />
                             {/if}
                             <span
-                                class="bg-gradient-to-r from-gray-400 via-gray-500 to-gray-400 bg-clip-text text-transparent inline-block"
+                                class="bg-gradient-to-r from-zinc-400 via-zinc-500 to-zinc-400 bg-clip-text text-transparent inline-block"
                             >
                                 {name}
                             </span>
@@ -446,9 +475,24 @@
                     {/each}
                 </div>
             </div>
-            <div class="col-span-3 p-4 max-h-full box-border">
+            <div class="max-h-full box-border grow pb-20">
                 <Graph bind:this={graphRef} notes={melodyToNotes} />
             </div>
-        </div>
+        </main>
     </div>
 {/if}
+
+<style>
+    .fade-out {
+        animation: fadeOutAnimation 1s ease forwards;
+    }
+
+    @keyframes fadeOutAnimation {
+        0% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+        }
+    }
+</style>

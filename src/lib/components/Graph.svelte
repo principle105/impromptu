@@ -28,6 +28,7 @@
                         label: "Note Frequency (Hertz)",
                         data: [],
                         borderWidth: 1,
+                        tension: 0.3,
                     },
                 ],
             },
@@ -41,8 +42,10 @@
         });
     });
 
-    const notesToFrequencies = (notes: Note[]): number[] => {
-        const frqs: number[] = [];
+    const updateChart = (notes: Note[]) => {
+        if (!chart) return;
+
+        const frequencies: number[] = [];
 
         for (let i = 0; i < notes.length; i++) {
             let frq = 0;
@@ -51,19 +54,22 @@
                 frq = NOTE_FREQUENCY_MAP[notes[i].name()];
             }
 
-            frqs.push(frq);
+            frequencies.push(frq);
         }
 
-        return frqs;
-    };
-
-    $: frequencies = notesToFrequencies(notes);
-
-    $: if (frequencies.length && chart) {
         chart.data.labels = frequencies.map((_, index) => index + 1);
         chart.data.datasets[0].data = frequencies;
+
         chart.update();
-    }
+    };
+
+    $: updateChart(notes);
 </script>
 
 <canvas bind:this={chartElement} width="400" height="325"></canvas>
+
+<style>
+    canvas {
+        filter: invert(1) brightness(2);
+    }
+</style>

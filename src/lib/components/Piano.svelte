@@ -92,7 +92,7 @@
     };
 </script>
 
-<div class="container">
+<div class="relative container h-[200px] w-[600px]">
     <button
         disabled={pianoNoteComponents[0].disabled}
         id="key-1"
@@ -567,25 +567,12 @@
 </div>
 
 <style>
-    .container {
-        position: relative;
-        height: 200px;
-        width: 600px;
-    }
-
     .key {
-        display: flex;
-        justify-content: center;
-        align-items: end;
-        color: gray;
-        font-size: 16px;
-        font-family: sans-serif;
+        @apply flex justify-center items-end text-zinc-600 text-base;
     }
 
     .key:disabled {
-        background-color: #888888;
-        opacity: 0.98;
-        box-shadow: none;
+        @apply bg-zinc-500 text-zinc-300 opacity-95 shadow-none cursor-not-allowed;
     }
 
     .note {
@@ -601,13 +588,13 @@
     }
 
     .white {
+        @apply bg-zinc-100;
         width: 7.15%;
         height: 100%;
-        background-color: #f0f8ff;
         border: solid 1px black;
         box-sizing: border-box;
         position: absolute;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.7);
     }
 
     .white:active {
@@ -622,7 +609,7 @@
         position: absolute;
         z-index: 1;
         box-shadow:
-            0 0 25px rgba(255, 255, 255, 0.8),
+            0 0 20px rgba(255, 255, 255, 0.7),
             0 4px 10px rgba(0, 0, 0, 0.5);
     }
 
@@ -630,7 +617,7 @@
         background-color: black;
     }
     .black:disabled {
-        background-color: #2e2e2e;
+        @apply bg-zinc-800 cursor-not-allowed;
     }
 
     /* Positioning white keys */
