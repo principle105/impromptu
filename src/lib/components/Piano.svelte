@@ -2,15 +2,14 @@
     import { fly } from "svelte/transition";
     import { writable } from "svelte/store";
 
-    import { Note } from "$lib/notes";
-    import { ALL_NOTES } from "$lib/constants";
+    import { Note, getAllNotes } from "$lib/notes";
 
     export let hoverNote: string;
     export let playNote: (key: Note) => void;
-    export let selectableNotes: Note[] = ALL_NOTES;
+    export let selectableNotes: Note[] = getAllNotes();
     export let showKeys = false;
 
-    if (!selectableNotes) selectableNotes = ALL_NOTES;
+    if (!selectableNotes) selectableNotes = getAllNotes();
 
     const activateSelectableNotes = (notes: Note[]) => {
         if (!notes) return;

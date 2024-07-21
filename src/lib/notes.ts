@@ -80,3 +80,33 @@ export const generateEmptyMeasure = (noteLengths: number[]) => {
 
     return notes;
 };
+
+export const getAllNotes = () => {
+    return [
+        new Note("C", "3"),
+        new Note("C#", "3"),
+        new Note("D", "3"),
+        new Note("D#", "3"),
+        new Note("E", "3"),
+        new Note("F", "3"),
+        new Note("F#", "3"),
+        new Note("G", "3"),
+        new Note("G#", "3"),
+        new Note("A", "3"),
+        new Note("A#", "3"),
+        new Note("B", "3"),
+        new Note("C", "4"),
+        new Note("C#", "4"),
+        new Note("D", "4"),
+        new Note("D#", "4"),
+        new Note("E", "4"),
+        new Note("F", "4"),
+        new Note("F#", "4"),
+        new Note("G", "4"),
+        new Note("G#", "4"),
+        new Note("A", "4"),
+        new Note("A#", "4"),
+        new Note("B", "4"),
+        new Note("C", "5"),
+    ];
+};

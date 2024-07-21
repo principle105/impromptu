@@ -12,12 +12,12 @@
         Note,
         Measure,
         generateEmptyMeasure,
+        getAllNotes,
     } from "$lib/notes";
     import {
         DOMINANT_CADENCE,
         POSSIBLE_PROGRESSIONS,
         MAJOR_TRIADS_MAP,
-        ALL_NOTES,
     } from "$lib/constants";
     import { delay } from "$lib/utils";
     import type { Chord, NoteName } from "$lib/types";
@@ -344,7 +344,7 @@
                             }
                         }}
                     >
-                        {!finished ? "Finish" : isPlaying ? "Stop" : "Play"}
+                        {!finished ? "Finish" : "Play"}
                     </button>
                 </div>
             </div>
@@ -393,7 +393,7 @@
                                 }}
                                 selectableNotes={!finished
                                     ? noteChoices[measureIndex].notes
-                                    : ALL_NOTES}
+                                    : getAllNotes()}
                                 {showKeys}
                             />
                         </div>
