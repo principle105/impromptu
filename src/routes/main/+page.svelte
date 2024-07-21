@@ -231,8 +231,8 @@
           let isBacking = false;
           // console.log(now + " now");
           // console.log(startingTimeNow + " original now");
-
-          if ((now - startingTimeNow) % 1 == 0) {
+          
+          if (((Math.floor(now*8.0+0.001)) - (Math.floor(startingTimeNow*8.0+0.001))) % 1 == 0) {
               backingTrack = majorTriads[melodyToNotes[i].note];
               isBacking = true;
               combineTracks = [
@@ -247,8 +247,10 @@
               melodyToNotes[i].length,
               now,
           );
+          // console.log(((Math.floor(now*8.0+0.001)) - (Math.floor(startingTimeNow*8.0+0.001))));
+          // console.log(((Math.floor(now*8.0+0.001)) - (Math.floor(startingTimeNow*8.0+0.001))) % 1 == 0);
           if (isBacking == true) {
-              console.log("works backing");
+              // console.log("works backing");
               backgroundSynth.triggerAttackRelease(combineTracks, 1, now);
           }
 
