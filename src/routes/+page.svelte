@@ -43,14 +43,14 @@
         synth.triggerAttack(key);
     };
 
+    const rand = Math.floor(Math.random() * POSSIBLE_PROGRESSIONS.length);
+
+    const chordProgression = [
+        ...POSSIBLE_PROGRESSIONS[rand],
+        ...DOMINANT_CADENCE,
+    ];
+
     const setKey = (key: Note) => {
-        const rand = Math.floor(Math.random() * POSSIBLE_PROGRESSIONS.length);
-
-        const chordProgression = [
-            ...POSSIBLE_PROGRESSIONS[rand],
-            ...DOMINANT_CADENCE,
-        ];
-
         if (key.note === "") return;
 
         setNoteChoices(key.note, chordProgression);
@@ -103,6 +103,8 @@
     };
 
     const nextMeasure = () => {
+        if (finished) return;
+
         measureIndex++;
 
         setTimeout(() => {
@@ -118,7 +120,7 @@
     };
 
     const previousMeasure = () => {
-        if (measureIndex - 1 < 0) return;
+        if (measureIndex - 1 < 0 || finished) return;
 
         measureIndex--;
         inMeasureIndex = 0;
@@ -154,35 +156,63 @@
 
     onMount(() => {
         synth = new Tone.Synth().toDestination();
+
+        recorder = new MediaRecorder(dest.stream);
+
+        sampler = createSampler();
+        backgroundSynth = createSampler();
+        backgroundSynth.volume.value -= 20;
     });
 
-    function onRelease() {
+    const onRelease = () => {
         synth.triggerRelease();
-    }
-
-    onMount(() => {
-        window.addEventListener("mouseup", onRelease);
-        return () => {
-            window.removeEventListener("mouseup", onRelease);
-        };
-    });
+    };
 
     let flagStart = false;
     let startingTimeNow = -1;
 
-    function stopPlayback() {
-        isPlaying = false;
-    }
+    const dest = Tone.getContext().createMediaStreamDestination();
 
-    async function playbackRecord() {
+    let recorder: MediaRecorder;
+    const audio: Blob[] = [];
+
+    let sampler: Tone.PolySynth<Tone.Synth<Tone.SynthOptions>>;
+    let backgroundSynth: Tone.PolySynth<Tone.Synth<Tone.SynthOptions>>;
+
+    let recordedPrev = false;
+
+    const stopPlayback = () => {
+        isPlaying = false;
+    };
+
+    const playbackRecord = async () => {
         isPlaying = true;
 
-        const sampler = createSampler();
-        const backgroundSynth = createSampler();
-
-        backgroundSynth.volume.value -= 20;
-
         let now = Tone.now();
+
+        sampler.connect(dest);
+        backgroundSynth.connect(dest);
+        recorder.ondataavailable = (event) => {
+            audio.push(event.data);
+        };
+        recorder.onstop = () => {
+            const audioBlob = new Blob(audio, {
+                type: "audio/ogg; codecs=opus",
+            });
+            const downloadUrl = URL.createObjectURL(audioBlob);
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.style.display = "none";
+            downloadAnchor.href = downloadUrl;
+            downloadAnchor.download = "myImpromptuPiece.ogg";
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+            URL.revokeObjectURL(downloadUrl);
+        };
+        if (recordedPrev == false) {
+            recorder.start();
+            recordedPrev = true;
+        }
 
         if (flagStart == false) {
             startingTimeNow = now;
@@ -206,10 +236,16 @@
             let combineTracks;
             let isBacking = false;
 
-            const ntoeName = melodyToNotes[i].note;
+            const noteName = melodyToNotes[i].note;
 
-            if ((now - startingTimeNow) % 1 == 0 && ntoeName !== "") {
-                backingTrack = MAJOR_TRIADS_MAP[ntoeName];
+            if (
+                (Math.floor(now * 8.0 + 0.001) -
+                    Math.floor(startingTimeNow * 8.0 + 0.001)) %
+                    1 ==
+                    0 &&
+                noteName !== ""
+            ) {
+                backingTrack = MAJOR_TRIADS_MAP[noteName];
 
                 isBacking = true;
                 combineTracks = [
@@ -236,10 +272,12 @@
         flagStart = false;
         hoverNote = "";
         isPlaying = false;
-    }
+    };
 
     let showKeys = false;
 </script>
+
+<svelte:window on:mouseup={onRelease} />
 
 {#if !isFirstKeyChosen}
     <ChooseKeyToStart
@@ -293,10 +331,16 @@
                         on:click={() => {
                             if (!finished) {
                                 finished = true;
-                            } else if (isPlaying) {
-                                stopPlayback();
                             } else {
                                 playbackRecord();
+                                setTimeout(
+                                    () => {
+                                        recorder.stop();
+                                        sampler.disconnect(dest);
+                                        backgroundSynth.disconnect(dest);
+                                    },
+                                    1000 * (chordProgression.length + 2) + 200,
+                                );
                             }
                         }}
                     >
@@ -312,7 +356,8 @@
                     <div>
                         <button
                             on:click={previousMeasure}
-                            class="text-gray-400 p-4 hover:text-gray-300"
+                            class="text-gray-400 p-4 {!finished &&
+                                'hover:text-gray-300'}"
                         >
                             <IconBack />
                         </button>
@@ -355,12 +400,14 @@
                     </div>
                     <div>
                         <button
+                            disabled={finished}
                             on:click={() => {
                                 if (measureIndex < noteChoices.length - 1) {
                                     nextMeasure();
                                 }
                             }}
-                            class="text-gray-400 p-4 hover:text-gray-300"
+                            class="text-gray-400 p-4 {!finished &&
+                                'hover:text-gray-300'}"
                         >
                             <IconForward />
                         </button>
@@ -376,7 +423,8 @@
                                 selectedRhythm = rhythm;
                                 onChangeRhythm();
                             }}
-                            class="flex justify-center items-center p-4 rounded-lg hover:border-2"
+                            class="flex justify-center items-center p-4 rounded-lg hover:border-2 {finished &&
+                                'invisible'}"
                         >
                             {#if name === "Whole Note"}
                                 <IconWholeNote class="text-gray-400 text-xl" />

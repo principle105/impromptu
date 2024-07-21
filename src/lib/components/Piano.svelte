@@ -12,7 +12,7 @@
 
     if (!selectableNotes) selectableNotes = ALL_NOTES;
 
-    function activateSelectableNotes(notes: Note[]) {
+    const activateSelectableNotes = (notes: Note[]) => {
         if (!notes) return;
 
         for (let i = 0; i < pianoNoteComponents.length; i++) {
@@ -24,7 +24,7 @@
                 pianoNoteComponents[i].disabled = true;
             }
         }
-    }
+    };
 
     $: activateSelectableNotes(selectableNotes);
 
@@ -84,13 +84,13 @@
         "key-25": false,
     });
 
-    function showNote(key: string) {
+    const showNote = (key: string) => {
         notesVisible.update((nv) => ({ ...nv, [key]: true }));
-    }
+    };
 
-    function hideNote(key: string) {
+    const hideNote = (key: string) => {
         notesVisible.update((nv) => ({ ...nv, [key]: false }));
-    }
+    };
 </script>
 
 <div class="container">

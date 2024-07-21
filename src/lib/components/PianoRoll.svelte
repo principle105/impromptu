@@ -25,7 +25,7 @@
         }
     }
 
-    async function scroll(index: number) {
+    const scroll = async (index: number) => {
         await tick();
 
         if (typeof document !== "undefined") {
@@ -39,7 +39,7 @@
                 });
             }
         }
-    }
+    };
 
     onMount(() => {
         // Initial scroll on mount
@@ -56,6 +56,7 @@
             {#if note}
                 <button
                     on:click={() => (selectedIndex = i)}
+                    disabled={!canEdit}
                     id={`line-${i}`}
                     class="flex-shrink-0 flex w-full"
                     style="height: {note.length *
@@ -76,6 +77,7 @@
                                             deleteNote(i);
                                         }
                                     }}
+                                    disabled={!canEdit}
                                     class="flex items-center justify-center bg-gradient-to-r from-blue-400 via-blue-500 to-blue-600 border border-blue-700 rounded-md relative z-10 group w-full h-full transition duration-300 ease-in-out transform shadow-lg hover:shadow-xl {canEdit &&
                                         'hover:bg-blue-500'}"
                                 >
